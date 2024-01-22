@@ -25,6 +25,6 @@ Product {
 
 Pack {
     id : int
-    id_pack_base : int
-    id_pack_elem : int
+    idProdBase : int
+    idProdElem : int
 }

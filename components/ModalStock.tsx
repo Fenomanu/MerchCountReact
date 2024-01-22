@@ -3,8 +3,8 @@ import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Ima
 import * as ImagePicker from 'expo-image-picker';
 
 
-export default function ModalProduct({ isVisible, product, closeModal, onEdit, onCreate }) {
-    const [formValues, setFormValues] = useState(product);
+export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCreate }) {
+    const [formValues, setFormValues] = useState(stock);
 
     // Solicitud de permiso para acceder a la galeria
     useEffect(() => {
@@ -17,8 +17,8 @@ export default function ModalProduct({ isVisible, product, closeModal, onEdit, o
       }, []);
 
     useEffect(() => {
-        setFormValues(product)
-    }, [product])
+        setFormValues(stock)
+    }, [stock])
     
     // Image Picker logic
     const openImagePicker = async () => {
@@ -57,26 +57,12 @@ export default function ModalProduct({ isVisible, product, closeModal, onEdit, o
             onRequestClose={closeModal}>
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
-                    <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Product</Text>
+                    <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Stock</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('name', text)}
                         placeholder="Name"
                         value={formValues.name}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('idGroup', text != "" ? parseInt(text) : 0)}
-                        value={formValues.idGroup.toString()}
-                        placeholder="Group"
-                        keyboardType='number-pad'
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('idSaga', text != "" ? parseInt(text) : 0)}
-                        value={formValues.idSaga.toString()}
-                        placeholder="Saga"
-                        keyboardType='numeric'
                     />
                     <TextInput
                         style={styles.input}

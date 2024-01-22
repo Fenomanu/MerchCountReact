@@ -3,8 +3,8 @@ import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Ima
 import * as ImagePicker from 'expo-image-picker';
 
 
-export default function ModalProduct({ isVisible, product, closeModal, onEdit, onCreate }) {
-    const [formValues, setFormValues] = useState(product);
+export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreate }) {
+    const [formValues, setFormValues] = useState(pack);
 
     // Solicitud de permiso para acceder a la galeria
     useEffect(() => {
@@ -17,8 +17,8 @@ export default function ModalProduct({ isVisible, product, closeModal, onEdit, o
       }, []);
 
     useEffect(() => {
-        setFormValues(product)
-    }, [product])
+        setFormValues(pack)
+    }, [pack])
     
     // Image Picker logic
     const openImagePicker = async () => {
@@ -66,20 +66,6 @@ export default function ModalProduct({ isVisible, product, closeModal, onEdit, o
                     />
                     <TextInput
                         style={styles.input}
-                        onChangeText={(text) => handleInputChange('idGroup', text != "" ? parseInt(text) : 0)}
-                        value={formValues.idGroup.toString()}
-                        placeholder="Group"
-                        keyboardType='number-pad'
-                    />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('idSaga', text != "" ? parseInt(text) : 0)}
-                        value={formValues.idSaga.toString()}
-                        placeholder="Saga"
-                        keyboardType='numeric'
-                    />
-                    <TextInput
-                        style={styles.input}
                         onChangeText={(text) => handleInputChange('price', text)}
                         value={formValues.price.toString()}
                         placeholder="Price"
@@ -89,14 +75,7 @@ export default function ModalProduct({ isVisible, product, closeModal, onEdit, o
                             handleInputChange('price', parseFloat(formValues.price))
                         }}
                     />
-                    <Button title="Seleccionar Imagen" onPress={openImagePicker} />
-                    <Image 
-                        style={{width:80, height:80}}
-                        source={
-                            formValues.imagePath !== ""
-                            ? { uri: formValues.imagePath }
-                            : require('../images/images.png') // Ruta a tu imagen por defecto
-                    }/>
+                    <Button title='Add Two Elements to pack' onPress={() => handleInputChange('idProdElemList', [1,2])}/>
                     <Pressable
                         style={[styles.button, styles.buttonClose]}
                         onPress={closeModal}>

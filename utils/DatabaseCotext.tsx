@@ -76,7 +76,6 @@ const createTables = () => {
                 id INTEGER PRIMARY KEY,
                 idProdBase INTEGER,
                 idProdElem INTEGER,
-                notes TEXT,
                 FOREIGN KEY (idProdBase) REFERENCES Product (id),
                 FOREIGN KEY (idProdElem) REFERENCES Product (id)
               );
@@ -249,7 +248,7 @@ export const DatabaseProvider = ({ children }) => {
 
     // Group
     const readPublicGroups = (callback: (data: any[]) => void) => {
-        var query = `Select * FROM [Group] WHERE id > 9`
+        var query = `Select * FROM [Group] WHERE adminOnly = 0`
         database.transaction((tx) => {
             // Lógica para insertar datos en la base de datos.
             tx.executeSql(query, [], (_, result) => {
@@ -333,7 +332,7 @@ export const DatabaseProvider = ({ children }) => {
 
     // Product
     const readAllProducts = (callback: (data: any[]) => void) => {
-      var query = `Select * FROM [Product]`
+      var query = `Select * FROM [Product] WHERE idGroup > 9`
       database.transaction((tx) => {
           // Lógica para insertar datos en la base de datos.
           tx.executeSql(query, [], (_, result) => {
@@ -488,9 +487,306 @@ export const DatabaseProvider = ({ children }) => {
           });
       }, (error) => {console.log(error)});
     };
+
+    // Packs
+    const readAllPacks = (callback: (data: any[]) => void) => {
+      var query =`
+        SELECT P.*, 
+              (SELECT GROUP_CONCAT(idProdElem, ',')
+              FROM Pack 
+              WHERE idProdBase = P.id) AS idProdElemList
+        FROM Product AS P WHERE P.idGroup = 1`
+      database.transaction((tx) => {
+          // Lógica para insertar datos en la base de datos.
+          tx.executeSql(query, [], (_, result) => {
+              // Manejar el resultado de la inserción si es necesario.
+              console.log(result)
+              const productsWithIdProdElem = result.rows._array.map((row) => {
+                const idProdElemList = row.idProdElemList ? row.idProdElemList.split(',').map(Number) : [];
+                return { ...row, idProdElemList };
+              });
+              callback(result.rows._array)
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+      });
+    }
+    
+    const createPack = (items, callback: (data: any) => void) => {
+      console.log("Creating Pack Product")
+      var query = `INSERT INTO [Product] VALUES (NULL, ?, ?, ?, 1, ?)`
+      database.transaction((tx) => {
+          // Lógica para insertar datos en la base de datos.
+          tx.executeSql(query, items.slice(0,-1), (_, result) => {
+              console.log("Created product")
+              // Manejar el resultado de la inserción si es necesario.
+              console.log(result.insertId)
+              const newProductId = result.insertId; // Obtén el ID del grupo recién creado
+              // Crea el nuevo grupo con los datos que desees
+              const newProduct = {
+                  id: newProductId,
+                  name: items[0],
+                  imagePath : items[1],
+                  price : items[2],
+                  idGroup : 1,
+                  idSaga : items[3],
+                  idProdElemList : []
+              };
+
+              if (items[4] && items[4].length > 0 && newProductId >= 0) {
+                console.log("Adding elements too")
+                query = `INSERT INTO [Pack] (idProdBase, idProdElem) VALUES (?, ?)`;
+                var params = [newProductId, items[4][0]];
+                var b = false;
+
+                items[4].forEach(element => {
+                  if (b) {
+                    params.push(newProductId, element);
+                    query += `, (?, ?)`; // Agrega placeholders adicionales a la sentencia SQL
+                  } else {
+                    b = true;
+                  }
+                });
+
+                console.log(params);
+
+                tx.executeSql(query, params, (_, result) => {
+                  console.log("Created product");
+                  // Manejar el resultado de la inserción si es necesario.
+                  console.log(result);
+                  const newPackId = result.insertId; // Obtén el ID del grupo recién creado
+                  // Crea el nuevo grupo con los datos que desees
+                  if (newProduct.idProdElemList) {
+                    newProduct.idProdElemList.push(items[4]);
+                    callback(newProduct);
+                  }
+                }, (_, result) => {
+                  console.log(result);
+                  return false;
+                });
+              }
+              else {
+                callback(newProduct)
+              }
+
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+      }, (result) => console.log(result));
+    } 
+    
+    const updatePack = (productId, updatedValues, callback: (data: any) => void) => {
+      console.log("Editing Product");
+      var query = `
+          UPDATE [Product]
+          SET name = ?,
+              imagePath = ?,
+              price = ?,
+              idGroup = ?,
+              idSaga = ?
+          WHERE id = ?`;
+      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], updatedValues[4], productId];
+      console.log(params)
+      database.transaction((tx) => {
+          console.log("About to execute")
+          tx.executeSql(query, params, (_, result) => {
+              console.log("Edited group");
+              // Puedes manejar el resultado de la edición si es necesario.
+              console.log(result);
+  
+              // Si deseas obtener los nuevos valores después de la edición,
+              // puedes consultar la base de datos o usar los valores actualizados
+              // directamente de 'updatedValues'.
+              const editedProduct = {
+                  id: productId,
+                  name: updatedValues[0],
+                  imagePath : updatedValues[1],
+                  price : updatedValues[2],
+                  idGroup : updatedValues[3],
+                  idSaga : updatedValues[4],
+              };
+              callback(editedProduct);
+          },
+          (_, result) => {
+              console.log("Execute Error")
+              console.log(result);
+              return false;
+          });
+      }, (error) => {console.log(error)});
+    };
+    const deletePack = (idValue) => {
+      const query = `DELETE FROM [Pack] WHERE idProdBase=(?)`;
+      const query2 = `DELETE FROM [Product] WHERE id=(?)`;
+      db.transaction((tx) => {
+        tx.executeSql(
+          query,
+          [idValue],
+          (tx, result) => {
+            // Manejar el resultado de la consulta
+            const rows = result.rows._array;
+            console.log(rows)
+            db.transaction((tx) => {
+              tx.executeSql(
+                query2,
+                [idValue],
+                (tx, result) => {
+                  // Manejar el resultado de la consulta
+                  const rows = result.rows._array;
+                  console.log(rows)
+                },
+                (error) => {
+                  console.error("Error al ejecutar la consulta:", error);
+                  return false;
+                }
+              );
+            });
+          },
+          (error) => {
+            console.error("Error al ejecutar la consulta:", error);
+            return false;
+          }
+        );
+      });
+    }
+    const printPacks = () => {
+      database.transaction((tx) => {
+          // Lógica para insertar datos en la base de datos.
+          tx.executeSql('SELECT * FROM [Product] WHERE idGroup = 1',[], (_, result) => {
+              // Manejar el resultado de la inserción si es necesario.
+              console.log(result.rows._array)
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+          tx.executeSql('SELECT * FROM [Pack]', [], (_, result) => {
+            // Manejar el resultado de la inserción si es necesario.
+            console.log(result.rows._array)
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+      });
+    }
+
+    // Stock
+    const readAllStock = (callback: (data: any[]) => void) => {
+      var query =` SELECT * FROM Product WHERE P.idGroup = 2`
+      database.transaction((tx) => {
+          // Lógica para insertar datos en la base de datos.
+          tx.executeSql(query, [], (_, result) => {
+              // Manejar el resultado de la inserción si es necesario.
+              callback(result.rows._array)
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+      });
+    }
+    
+    const createStock = (items, callback: (data: any) => void) => {
+      console.log("Creating Pack Product")
+      var query = `INSERT INTO [Product] VALUES (NULL, ?, ?, ?, 2, ?)`
+      database.transaction((tx) => {
+          // Lógica para insertar datos en la base de datos.
+          tx.executeSql(query, items, (_, result) => {
+              console.log("Created Stock")
+              // Manejar el resultado de la inserción si es necesario.
+              console.log(result.insertId)
+              const newProductId = result.insertId; // Obtén el ID del grupo recién creado
+              // Crea el nuevo grupo con los datos que desees
+              const newStock = {
+                  id: newProductId,
+                  name: items[0],
+                  imagePath : items[1],
+                  price : items[2],
+                  idGroup : 2,
+                  idSaga : items[3],
+              };
+              callback(newStock)
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+      }, (result) => console.log(result));
+    } 
+    
+    const updateStock = (productId, updatedValues, callback: (data: any) => void) => {
+      console.log("Editing Product");
+      var query = `
+          UPDATE [Product]
+          SET name = ?,
+              imagePath = ?,
+              price = ?,
+              idGroup = 2,
+              idSaga = ?
+          WHERE id = ?`;
+      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], productId];
+      console.log(params)
+      database.transaction((tx) => {
+          console.log("About to execute")
+          tx.executeSql(query, params, (_, result) => {
+              console.log("Edited Stock");
+              // Puedes manejar el resultado de la edición si es necesario.
+              console.log(result);
+  
+              // Si deseas obtener los nuevos valores después de la edición,
+              // puedes consultar la base de datos o usar los valores actualizados
+              // directamente de 'updatedValues'.
+              const editedProduct = {
+                  id: productId,
+                  name: updatedValues[0],
+                  imagePath : updatedValues[1],
+                  price : updatedValues[2],
+                  idGroup : 2,
+                  idSaga : updatedValues[3],
+              };
+              callback(editedProduct);
+          },
+          (_, result) => {
+              console.log("Execute Error")
+              console.log(result);
+              return false;
+          });
+      }, (error) => {console.log(error)});
+    };
+    const printStock = () => {
+      database.transaction((tx) => {
+          // Lógica para insertar datos en la base de datos.
+          tx.executeSql('SELECT * FROM [Product] WHERE idGroup = 1',[], (_, result) => {
+              // Manejar el resultado de la inserción si es necesario.
+              console.log(result.rows._array)
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+          tx.executeSql('SELECT * FROM [Pack]', [], (_, result) => {
+            // Manejar el resultado de la inserción si es necesario.
+            console.log(result.rows._array)
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+      });
+    }
+    
     
   return (
-    <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, crudGroup, deleteItem, readPublicGroups, createGroup, updateGroup, readAllProducts, createProduct, updateProduct, readAllSagas, createSaga, updateSaga }}>
+    <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, crudGroup, deleteItem,
+      readPublicGroups, createGroup, updateGroup, 
+      readAllProducts, createProduct, updateProduct, 
+      readAllSagas, createSaga, updateSaga,
+      readAllPacks, createPack, updatePack, printPacks, deletePack,
+      readAllStock, createStock, updateStock, printStock }}>
       {children}
     </DatabaseContext.Provider>
   );
