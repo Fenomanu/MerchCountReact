@@ -1,0 +1,30 @@
+Classes:
+
+Group {
+    id : int
+    name : string
+    price : float
+    logoPath : string
+    adminOnly : bool
+    notes :string
+}
+
+Saga {
+    id : int
+    name : string
+}
+
+Product {
+    id : int
+    name : string
+    imagePath : string
+    price : float
+    idGroup : int
+    idSaga : int
+}
+
+Pack {
+    id : int
+    id_pack_base : int
+    id_pack_elem : int
+}
