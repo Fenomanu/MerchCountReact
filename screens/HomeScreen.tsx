@@ -43,12 +43,10 @@ export default function HomeScreen({navigation, route}) {
         <View style={[styles.container, containerExtra]}>
             <View style={styles.hContainer}>
                 {/* Products */}
-                <ScrollView horizontal={true} style={styles.productList} >
+                <ScrollView horizontal={true} style={styles.productList} contentContainerStyle={styles.productContainer}>
                     {mostSold.map((prod) => (
                       <ProductButton key={prod.id} imagePath={prod.imagePath} onPress={() => console.log('Added Product')}/>
                     ))}
-                    
-                    <ProductButton imagePath={""} onPress={() => console.log('Printed')}></ProductButton>
                 </ScrollView>
                 {/* Buttons and price */}
                 <View style={styles.vContainer}>
@@ -94,13 +92,15 @@ const styles = StyleSheet.create({
     },
     productList: {
       backgroundColor: '#565554',
-      padding:40,
       margin:20,
       marginLeft:30,
       marginTop:30,
       borderRadius:20,
       borderWidth:5,
       borderColor: '#d19ba4'
+    },
+    productContainer: {
+      padding:25,
     },
     vContainer: {
       flexDirection: 'column',

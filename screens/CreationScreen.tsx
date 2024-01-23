@@ -7,16 +7,16 @@ export default function CreationScreen({navigation, route}) {
     marginTop: StatusBar.currentHeight
   }
 
-  const { database, crudGroup } = useDatabase();
+  const { database } = useDatabase();
 
   return (
     <View style={[styles.container, containerExtra]}>
       <ScrollView contentContainerStyle= {styles.wrapper}>
         <GroupButton titulo={"New Group"} logoPath={""} onPress={() => navigation.navigate('NewGroup')}></GroupButton>
-        <GroupButton titulo={"New Pack"} logoPath={""} onPress={() => navigation.navigate('NewPack')}></GroupButton>
-        <GroupButton titulo={"New Product"} logoPath={""} onPress={() => navigation.navigate('NewProduct')}></GroupButton>
         <GroupButton titulo={"New Saga"} logoPath={""} onPress={() => navigation.navigate('NewSaga')}></GroupButton>
+        <GroupButton titulo={"New Product"} logoPath={""} onPress={() => navigation.navigate('NewProduct')}></GroupButton>
         <GroupButton titulo={"New Stock"} logoPath={""} onPress={() => navigation.navigate('NewStock')}></GroupButton>
+        <GroupButton titulo={"New Pack"} logoPath={""} onPress={() => navigation.navigate('NewPack')}></GroupButton>
       </ScrollView>
     </View>
   );

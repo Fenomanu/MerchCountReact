@@ -40,17 +40,45 @@ export default function NewPack({navigation}) {
 
     // Adding item function
     const handleAddItem = (pack) => {
-        createPack([pack.name, pack.imagePath, pack.price, 1, pack.idProdElemList], (newItem) => {
+        createPack([pack.name, pack.imagePath, pack.price, 0, pack.idProdElemList], (newItem) => {
             if (typeof newItem === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
             } else {
+                console.log(newItem)
                 setPacks(packs => [...packs, newItem])
             }
         });
     }
 
     const handleEditItem = (packToEdit) => {
-        console.log("This is the pack to edit")
+        console.log("Editing this")
+        console.log(packToEdit)
+    }
+    const handleEditItem2 = (packToEdit) => {
+        console.log(packToEdit)
+        updatePack(packToEdit.id, [packToEdit.name, packToEdit.price, 0, packToEdit.idProdElemList], (editedPack) => {
+            if (typeof editedPack === 'function') {
+                // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
+            } else {
+                const updatedPacks = packs.map((pack) => {
+                    if (pack.id === editedPack.id) {
+                      // Modifica el grupo con el ID coincidente
+                      return {
+                        ...pack,
+                        name: editedPack.name,
+                        imagePath: "",
+                        price: editedPack.price,
+                        idGroup: 1,
+                        idSaga: 0,
+                        idProdElemList: editedPack.idProdElemList
+                      };
+                    }
+                    // Mantén los demás grupos sin cambios
+                    return pack;
+                  });
+                setPacks(updatedPacks)
+            }
+        });
     }
 
     // Deleting item function

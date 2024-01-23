@@ -17,7 +17,9 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
       }, []);
 
     useEffect(() => {
-        setFormValues(pack)
+      console.log("Setting form values")
+      console.log(pack)
+      setFormValues(pack)
     }, [pack])
     
     // Image Picker logic
@@ -41,10 +43,12 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
             ...formValues,
             [fieldName]: value,
         });
+        console.log(pack)
         console.log(value)
     };
 
     const handleSubmit = () => {
+        console.log(formValues)
         formValues.id == -1 ? onCreate(formValues) : onEdit(formValues)
         closeModal()
     }
@@ -75,7 +79,8 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
                             handleInputChange('price', parseFloat(formValues.price))
                         }}
                     />
-                    <Button title='Add Two Elements to pack' onPress={() => handleInputChange('idProdElemList', [1,2])}/>
+                    <Button title='Add Two Elements to pack' onPress={() => handleInputChange('idProdElemList', [4,5])}/>
+                    <Button title='Print Current' onPress={() => console.log(formValues)}/>
                     <Pressable
                         style={[styles.button, styles.buttonClose]}
                         onPress={closeModal}>

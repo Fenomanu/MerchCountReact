@@ -95,64 +95,6 @@ export const useDatabase = () => {
 export const DatabaseProvider = ({ children }) => {
     const [database, setDatabase] = useState(db);
 
-    const crudGroup = (op: 'c' | 'r' | 'u' | 'd' = 'c', tableName, elements: Array<any>, id = undefined, callback: (data: any[]) => void = undefined) => {
-        
-        try {
-
-            if(id != undefined) {
-                console.log("Id defined")
-            }
-            var values = "NULL"
-            if(elements)
-            {   
-                elements.forEach(element => {
-                    values += ',?'
-                });
-            }
-        
-            switch(op) {
-                case 'c':
-                    var query = `INSERT INTO [${tableName}] VALUES (${values})`
-                    console.log("Creating Element")
-                    database.transaction((tx) => {
-                        // Lógica para insertar datos en la base de datos.
-                        tx.executeSql(query, elements, (_, result) => {
-                            // Manejar el resultado de la inserción si es necesario.
-                            console.log(result)
-                        },
-                        (_,result) => {
-                            console.log(result)
-                            return false;
-                        });
-                    });
-                    break;
-                case 'r':
-                    var query = `Select * FROM [${tableName}] WHERE id > 0`
-                    database.transaction((tx) => {
-                        // Lógica para insertar datos en la base de datos.
-                        tx.executeSql(query, elements, (_, result) => {
-                            // Manejar el resultado de la inserción si es necesario.
-                            console.log(result)
-                            if(callback != undefined) callback(result.rows._array)
-                            else console.log("Undefined callback")
-                        },
-                        (_,result) => {
-                            console.log(result)
-                            return false;
-                        });
-                    });
-                    break;
-                case 'u':
-                    break;
-                case 'd':
-                    break;
-            }
-        } 
-        catch(error) {
-            console.log(error)
-        }
-    }
-
     // Generic
     const getAllTables = () =>{
       db.transaction((tx) => {
@@ -176,10 +118,10 @@ export const DatabaseProvider = ({ children }) => {
           }
         );
       });
-    }
+    };
 
-    const printTableColumns = (column:string) => {
-      const query = `PRAGMA table_info(${column});`;
+    const printTableColumns = (table:string) => {
+      const query = `PRAGMA table_info(${table});`;
       db.transaction((tx) => {
         tx.executeSql(
           query,
@@ -203,7 +145,7 @@ export const DatabaseProvider = ({ children }) => {
           }
         );
       });
-    }
+    };
 
     const fetchData = (tableName: string, callback: (data: any[]) => void) => {
         const query = `SELECT * FROM [${tableName}]`
@@ -244,7 +186,7 @@ export const DatabaseProvider = ({ children }) => {
             }
           );
         });
-    }
+    };
 
     // Group
     const readPublicGroups = (callback: (data: any[]) => void) => {
@@ -261,7 +203,7 @@ export const DatabaseProvider = ({ children }) => {
                 return false;
             });
         });
-    }
+    };
 
     const createGroup = (items, callback: (data: any) => void) => {
         console.log("Creating group")
@@ -289,7 +231,8 @@ export const DatabaseProvider = ({ children }) => {
                 return false;
             });
         });
-    } 
+    };
+
     const updateGroup = (groupId, updatedValues, callback: (data: any) => void) => {
       console.log("Editing group");
       var query = `
@@ -345,7 +288,7 @@ export const DatabaseProvider = ({ children }) => {
               return false;
           });
       });
-    }
+    };
     
     const createProduct = (items, callback: (data: any) => void) => {
       console.log("Creating product")
@@ -373,7 +316,7 @@ export const DatabaseProvider = ({ children }) => {
               return false;
           });
       });
-    } 
+    };
     
     const updateProduct = (productId, updatedValues, callback: (data: any) => void) => {
       console.log("Editing Product");
@@ -430,7 +373,7 @@ export const DatabaseProvider = ({ children }) => {
               return false;
           });
       });
-    }
+    };
     
     const createSaga = (items, callback: (data: any) => void) => {
       console.log("Creating Saga")
@@ -454,7 +397,7 @@ export const DatabaseProvider = ({ children }) => {
               return false;
           });
       });
-    } 
+    };
     
     const updateSaga = (sagaId, updatedValues, callback: (data: any) => void) => {
       console.log("Editing Saga");
@@ -500,12 +443,13 @@ export const DatabaseProvider = ({ children }) => {
           // Lógica para insertar datos en la base de datos.
           tx.executeSql(query, [], (_, result) => {
               // Manejar el resultado de la inserción si es necesario.
-              console.log(result)
               const productsWithIdProdElem = result.rows._array.map((row) => {
                 const idProdElemList = row.idProdElemList ? row.idProdElemList.split(',').map(Number) : [];
                 return { ...row, idProdElemList };
               });
-              callback(result.rows._array)
+              console.log("Reading")
+              console.log(productsWithIdProdElem)
+              callback(productsWithIdProdElem)
           },
           (_,result) => {
               console.log(result)
@@ -559,7 +503,7 @@ export const DatabaseProvider = ({ children }) => {
                   const newPackId = result.insertId; // Obtén el ID del grupo recién creado
                   // Crea el nuevo grupo con los datos que desees
                   if (newProduct.idProdElemList) {
-                    newProduct.idProdElemList.push(items[4]);
+                    newProduct.idProdElemList = newProduct.idProdElemList.concat(items[4]);
                     callback(newProduct);
                   }
                 }, (_, result) => {
@@ -579,37 +523,76 @@ export const DatabaseProvider = ({ children }) => {
       }, (result) => console.log(result));
     } 
     
-    const updatePack = (productId, updatedValues, callback: (data: any) => void) => {
-      console.log("Editing Product");
+    const updatePack = (packId, updatedValues, callback: (data: any) => void) => {
+      console.log("Editing Pack");
+      console.log(updatedValues[4])
       var query = `
           UPDATE [Product]
           SET name = ?,
-              imagePath = ?,
+              imagePath = "",
               price = ?,
-              idGroup = ?,
+              idGroup = 1,
               idSaga = ?
           WHERE id = ?`;
-      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], updatedValues[4], productId];
+      const params = [updatedValues[0], updatedValues[1], updatedValues[2], packId];
       console.log(params)
       database.transaction((tx) => {
           console.log("About to execute")
           tx.executeSql(query, params, (_, result) => {
-              console.log("Edited group");
-              // Puedes manejar el resultado de la edición si es necesario.
-              console.log(result);
-  
-              // Si deseas obtener los nuevos valores después de la edición,
-              // puedes consultar la base de datos o usar los valores actualizados
-              // directamente de 'updatedValues'.
-              const editedProduct = {
-                  id: productId,
-                  name: updatedValues[0],
-                  imagePath : updatedValues[1],
-                  price : updatedValues[2],
-                  idGroup : updatedValues[3],
-                  idSaga : updatedValues[4],
-              };
-              callback(editedProduct);
+            console.log("Edited group");
+            // Puedes manejar el resultado de la edición si es necesario.
+            console.log(result);
+            // Si deseas obtener los nuevos valores después de la edición,
+            // puedes consultar la base de datos o usar los valores actualizados
+            // directamente de 'updatedValues'.
+            const editedPack = {
+                id: packId,
+                name: updatedValues[0],
+                imagePath : "",
+                price : updatedValues[1],
+                idGroup : 1,
+                idSaga : 0,
+                idProdElemList : []
+            };
+
+            tx.executeSql(`DELETE FROM [Pack] WHERE idProdBase=(?)`, [packId], (_,result) => {
+              if (updatedValues[4] && updatedValues[4].length > 0) {
+                console.log("Adding elements too")
+                query = `INSERT INTO [Pack] (idProdBase, idProdElem) VALUES (?, ?)`;
+                var params = [packId, updatedValues[4][0]];
+                var b = false;
+                console.log(updatedValues[4])
+                updatedValues[4].forEach(element => {
+                  if (b) {
+                    params.push(packId, element);
+                    query += `, (?, ?)`; // Agrega placeholders adicionales a la sentencia SQL
+                  } else {
+                    b = true;
+                  }
+                });
+
+                console.log(params);
+
+                tx.executeSql(query, params, (_, result) => {
+                  console.log("Created elements");
+                  // Manejar el resultado de la inserción si es necesario.
+                  console.log(result);
+                  const newPackId = result.insertId; // Obtén el ID del grupo recién creado
+                  // Crea el nuevo grupo con los datos que desees
+                  if (editedPack.idProdElemList) {
+                    editedPack.idProdElemList = editedPack.idProdElemList.concat(updatedValues[4]);
+                    console.log(editedPack.idProdElemList)
+                    callback(editedPack);
+                  }
+                }, (_, result) => {
+                  console.log(result);
+                  return false;
+                });
+              }
+              else {
+                callback(editedPack)
+              }
+            })
           },
           (_, result) => {
               console.log("Execute Error")
@@ -618,6 +601,7 @@ export const DatabaseProvider = ({ children }) => {
           });
       }, (error) => {console.log(error)});
     };
+
     const deletePack = (idValue) => {
       const query = `DELETE FROM [Pack] WHERE idProdBase=(?)`;
       const query2 = `DELETE FROM [Product] WHERE id=(?)`;
@@ -652,6 +636,7 @@ export const DatabaseProvider = ({ children }) => {
         );
       });
     }
+
     const printPacks = () => {
       database.transaction((tx) => {
           // Lógica para insertar datos en la base de datos.
@@ -676,7 +661,7 @@ export const DatabaseProvider = ({ children }) => {
 
     // Stock
     const readAllStock = (callback: (data: any[]) => void) => {
-      var query =` SELECT * FROM Product WHERE P.idGroup = 2`
+      var query =` SELECT * FROM Product WHERE idGroup = 2`
       database.transaction((tx) => {
           // Lógica para insertar datos en la base de datos.
           tx.executeSql(query, [], (_, result) => {
@@ -688,7 +673,7 @@ export const DatabaseProvider = ({ children }) => {
               return false;
           });
       });
-    }
+    };
     
     const createStock = (items, callback: (data: any) => void) => {
       console.log("Creating Pack Product")
@@ -716,7 +701,7 @@ export const DatabaseProvider = ({ children }) => {
               return false;
           });
       }, (result) => console.log(result));
-    } 
+    };
     
     const updateStock = (productId, updatedValues, callback: (data: any) => void) => {
       console.log("Editing Product");
@@ -757,6 +742,7 @@ export const DatabaseProvider = ({ children }) => {
           });
       }, (error) => {console.log(error)});
     };
+
     const printStock = () => {
       database.transaction((tx) => {
           // Lógica para insertar datos en la base de datos.
@@ -777,16 +763,56 @@ export const DatabaseProvider = ({ children }) => {
               return false;
           });
       });
-    }
-    
+    };
+
+    const getGroupItemsBySaga = (idGroup, callback : (data:any) => void) => {
+      database.transaction((tx) => {
+        // Lógica para insertar datos en la base de datos.
+        tx.executeSql(`SELECT * FROM [Product] WHERE idGroup = ?`,[idGroup], (_, result) => {
+            // Manejar el resultado de la inserción si es necesario.
+            var sagas = {}
+            result.rows._array.forEach(element => {
+              if (!sagas[element.idSaga]) sagas[element.idSaga] = []
+              sagas[element.idSaga].push(element)
+            });
+            console.log(sagas)
+            callback(sagas)
+        },
+        (_,result) => {
+            console.log(result)
+            return false;
+        });
+    });
+    };
+
+    const getSagasDict = (callback : (data:any) => void) => {
+      database.transaction((tx) => {
+        // Lógica para insertar datos en la base de datos.
+        tx.executeSql(`SELECT * FROM [Saga]`,[], (_, result) => {
+            // Manejar el resultado de la inserción si es necesario.
+            console.log(result.rows)
+            var sagas = {}
+            result.rows._array.forEach(element => {
+              if (!sagas[element.id]) sagas[element.id] = element.name
+            });
+            console.log(sagas)
+            callback(sagas)
+        },
+        (_,result) => {
+            console.log(result)
+            return false;
+        });
+    });
+    };
     
   return (
-    <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, crudGroup, deleteItem,
+    <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, deleteItem,
       readPublicGroups, createGroup, updateGroup, 
       readAllProducts, createProduct, updateProduct, 
       readAllSagas, createSaga, updateSaga,
       readAllPacks, createPack, updatePack, printPacks, deletePack,
-      readAllStock, createStock, updateStock, printStock }}>
+      readAllStock, createStock, updateStock, printStock,
+      getGroupItemsBySaga, getSagasDict }}>
       {children}
     </DatabaseContext.Provider>
   );

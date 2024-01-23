@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image } from 'react-native';
+import { Text, View, Modal, StyleSheet, Pressable, TextInput, Button, Image } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
+import CustomPicker from './CustomPicker';
 
 
-export default function ModalProduct({ isVisible, product, closeModal, onEdit, onCreate }) {
+export default function ModalProduct({ isVisible, product, sagasInput, groupsInput, closeModal, onEdit, onCreate }) {
     const [formValues, setFormValues] = useState(product);
+    const [sagas, setSagas] = useState(sagasInput);
+    const [groups, setGroups] = useState(groupsInput);
+    const defaultSaga = {id:0, name:"No saga"}
 
     // Solicitud de permiso para acceder a la galeria
     useEffect(() => {
@@ -14,12 +19,24 @@ export default function ModalProduct({ isVisible, product, closeModal, onEdit, o
             alert('Se necesita permiso para acceder a la galería.');
           }
         })();
-      }, []);
+    }, []);
 
     useEffect(() => {
         setFormValues(product)
     }, [product])
     
+    useEffect(() => {
+      console.log("updating sagas")
+      console.log(sagasInput)
+      setSagas(sagasInput)
+    }, [sagasInput])
+    
+    useEffect(() => {
+      console.log("updating groups")
+      console.log(groupsInput)
+      setGroups(groupsInput)
+    }, [groupsInput])
+
     // Image Picker logic
     const openImagePicker = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -41,6 +58,7 @@ export default function ModalProduct({ isVisible, product, closeModal, onEdit, o
             ...formValues,
             [fieldName]: value,
         });
+        console.log("Changed")
         console.log(value)
     };
 
@@ -54,6 +72,7 @@ export default function ModalProduct({ isVisible, product, closeModal, onEdit, o
             animationType='slide'
             transparent={true}
             visible={isVisible}
+            
             onRequestClose={closeModal}>
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
@@ -64,19 +83,15 @@ export default function ModalProduct({ isVisible, product, closeModal, onEdit, o
                         placeholder="Name"
                         value={formValues.name}
                     />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('idGroup', text != "" ? parseInt(text) : 0)}
-                        value={formValues.idGroup.toString()}
-                        placeholder="Group"
-                        keyboardType='number-pad'
+                    <CustomPicker
+                      options={[defaultSaga].concat(sagas)}
+                      selectedValue={sagas.find((item) => item.id == formValues.idSaga)?? defaultSaga}
+                      onValueChange={(value) => handleInputChange('idSaga',value.id)}
                     />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('idSaga', text != "" ? parseInt(text) : 0)}
-                        value={formValues.idSaga.toString()}
-                        placeholder="Saga"
-                        keyboardType='numeric'
+                    <CustomPicker
+                      options={groups}
+                      selectedValue={groups.find((item) => item.id == formValues.idGroup)??{name:"Pick a group"}}
+                      onValueChange={(value) => handleInputChange('idGroup',value.id)}
                     />
                     <TextInput
                         style={styles.input}

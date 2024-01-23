@@ -4,6 +4,7 @@ import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalProduct from '../components/ModalProduct';
 import TableItem from '../components/TableItem';
+import { Picker } from '@react-native-picker/picker';
 
 
 export default function NewProduct({navigation}) {
@@ -20,14 +21,17 @@ export default function NewProduct({navigation}) {
     }
 
     // Database context
-    const { deleteItem, readAllProducts, createProduct, updateProduct } = useDatabase();
+    const { deleteItem, readAllProducts, createProduct, updateProduct, fetchData, readPublicGroups } = useDatabase();
 
     // Group List
     const [products, setProducts] = useState([]);
+    const [sagas, setSagas] = useState([]);
+    const [groups, setGroups] = useState([]);
     // Change modal visibility
     const [isModalVisible, setModalVisible] = useState(false);
     // Focused group for modal => emptyGroup if mode = create
     const [focusProduct, setFocusProduct] = useState(emptyProduct);
+    const [selectedLanguage, setSelectedLanguage] = useState();
     
     const openModal = (item) => {
         setFocusProduct(item);
@@ -87,12 +91,14 @@ export default function NewProduct({navigation}) {
 
     useEffect(() => {
         // Load all groups in list
+        fetchData('Saga', setSagas)
+        readPublicGroups(setGroups)
         readAllProducts(setProducts)
     }, []);
 
     return (
         <View style = {containerExtra}>
-            <ModalProduct isVisible={isModalVisible} product={focusProduct} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
+            <ModalProduct isVisible={isModalVisible} product={focusProduct} sagasInput={sagas} groupsInput={groups} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
             <GroupButton titulo={"New Product"} onPress={() => openModal(emptyProduct)} logoPath={""}></GroupButton>
             <FlatList
                 data={products}
