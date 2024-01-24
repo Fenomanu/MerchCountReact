@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image } from 'react-native';
+import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 
@@ -75,24 +75,27 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
                             handleInputChange('price', parseFloat(formValues.price))
                         }}
                     />
-                    <Button title="Seleccionar Imagen" onPress={openImagePicker} />
-                    <Image 
-                        style={{width:80, height:80}}
-                        source={
+                    <TouchableOpacity style={styles.imageInput} onPress={openImagePicker}>
+                      <Image 
+                          style={{width:80, height:80}}
+                          source={
                             formValues.imagePath !== ""
                             ? { uri: formValues.imagePath }
                             : require('../images/images.png') // Ruta a tu imagen por defecto
-                    }/>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={closeModal}>
-                        <Text style={styles.textStyle}>Cerrar Modal</Text>
-                    </Pressable>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={handleSubmit}>
-                        <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
-                    </Pressable>
+                          }/>
+                    </TouchableOpacity>
+                    <View style={styles.hContainer}>
+                      <Pressable
+                          style={styles.buttonClose}
+                          onPress={closeModal}>
+                          <Text style={styles.textStyle}>Close</Text>
+                      </Pressable>
+                      <Pressable
+                          style={styles.button}
+                          onPress={handleSubmit}>
+                          <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
+                      </Pressable>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -100,48 +103,61 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
 }
 
 const styles = StyleSheet.create({
-    centeredView: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 22,
-    },
-    modalView: {
-      margin: 20,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    button: {
-      borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-    },
-    buttonClose: {
-      backgroundColor: '#2196F3',
-    },
-    textStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-      textAlign: 'center',
-    },
-    modalText: {
-      marginBottom: 15,
-      textAlign: 'center',
-    },
-    input: {
-      height: 40,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
-    },
-  });
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: '#FED8B1',
+    borderRadius: 20,
+    paddingHorizontal: 25,
+    paddingVertical: 10,
+    justifyContent: 'space-between',
+    elevation: 5,
+  },
+  hContainer: {
+    flexDirection: 'row',
+  },
+  buttonClose: {
+    borderRadius: 20,
+    padding: 15,
+    margin: 10,
+    elevation: 5,
+    backgroundColor: '#FFC0CB',
+  },
+  button: {
+    borderRadius: 20,
+    padding: 15,
+    margin: 10,
+    elevation: 5,
+    backgroundColor: '#75F4F4',
+  },
+  imageInput: {
+    borderRadius: 20,
+    margin: 12,
+    elevation: 5,
+    backgroundColor: 'white',
+    alignSelf:'center'
+  },
+  textStyle: {
+    color: '#565554',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderRadius:10,
+    backgroundColor: 'white',
+    elevation:5,
+    borderWidth: 0,
+    padding: 10,
+  },
+});

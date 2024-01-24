@@ -43,7 +43,6 @@ export default function CustomPicker({ options, selectedValue, onValueChange }) 
 
 const styles = StyleSheet.create({
   pickerButton: {
-    borderColor: '#efefef',
     padding: 10,
     justifyContent: 'space-between',
     flexDirection: 'row',

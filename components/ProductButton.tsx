@@ -1,16 +1,20 @@
 import { StyleSheet, TouchableOpacity, Image, View, Text, TouchableHighlight } from 'react-native';
+import ComposeImage from './ComposeImage';
 
 
-export default function ProductButton({ imagePath, onPress}) {
+export default function ProductButton({ idGroup, imagePath, onPress}) {
     return (
       <View>
-        <TouchableHighlight style={styles.container} underlayColor={'#75F4F4'} onPress={onPress}>
-          <Image
-            source={imagePath == ""?require('../images/images.png') : {uri:imagePath}} // Ruta relativa a la imagen en tu proyecto
-            style={styles.image} // Personaliza el tamaño de la imagen
-          />
-          {/*<Text >Grupo</Text>*/}
-        </TouchableHighlight>
+        <TouchableOpacity style={styles.container} onPress={onPress}>
+         {imagePath == "" ?
+            <Image
+              source={require('../images/images.png')} // Ruta relativa a la imagen en tu proyecto
+              style={styles.image} // Personaliza el tamaño de la imagen
+            />
+            :
+            <ComposeImage idGroup={idGroup} source={imagePath}/>
+          }
+        </TouchableOpacity>
       </View>
       );
 }

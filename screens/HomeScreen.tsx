@@ -16,7 +16,7 @@ export default function HomeScreen({navigation, route}) {
     
     const { database, fetchData, getAllTables, printTableColumns } = useDatabase();
     
-    const { toggleCart } = useContext(CartContext);
+    const { toggleCart, addItem } = useContext(CartContext);
   
     const containerExtra = {
       marginTop: StatusBar.currentHeight
@@ -45,8 +45,9 @@ export default function HomeScreen({navigation, route}) {
                 {/* Products */}
                 <ScrollView horizontal={true} style={styles.productList} contentContainerStyle={styles.productContainer}>
                     {mostSold.map((prod) => (
-                      <ProductButton key={prod.id} imagePath={prod.imagePath} onPress={() => console.log('Added Product')}/>
+                      <ProductButton key={prod.id} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)}/>
                     ))}
+
                 </ScrollView>
                 {/* Buttons and price */}
                 <View style={styles.vContainer}>

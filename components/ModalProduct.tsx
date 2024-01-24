@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text, View, Modal, StyleSheet, Pressable, TextInput, Button, Image, TouchableOpacity } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import CustomPicker from './CustomPicker';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 
 
 export default function ModalProduct({ isVisible, product, sagasInput, groupsInput, closeModal, onEdit, onCreate }) {
@@ -55,10 +53,20 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
 
     // Para el cambio de un valor en el formulario
     const handleInputChange = (fieldName, value) => {
-        setFormValues({
-            ...formValues,
-            [fieldName]: value,
-        });
+        if(fieldName == 'idGroup'){
+          const price = groups.find((x) => x.id == value).price;
+          setFormValues({
+              ...formValues,
+              [fieldName]: value,
+              ['price']:price,
+          });
+        }
+        else {
+          setFormValues({
+              ...formValues,
+              [fieldName]: value,
+          });
+        }
         console.log("Changed")
         console.log(value)
     };
@@ -78,21 +86,21 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                     <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Product</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('name', text)}
-                        placeholder="Name *"
-                        value={formValues.name}
+                    <CustomPicker
+                      options={groups}
+                      selectedValue={groups.find((item) => item.id == formValues.idGroup)??{name:"Pick a group *"}}
+                      onValueChange={(value) => handleInputChange('idGroup',value.id)}
                     />
                     <CustomPicker
                       options={[defaultSaga].concat(sagas)}
                       selectedValue={sagas.find((item) => item.id == formValues.idSaga)?? defaultSaga}
                       onValueChange={(value) => handleInputChange('idSaga',value.id)}
                     />
-                    <CustomPicker
-                      options={groups}
-                      selectedValue={groups.find((item) => item.id == formValues.idGroup)??{name:"Pick a group *"}}
-                      onValueChange={(value) => handleInputChange('idGroup',value.id)}
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => handleInputChange('name', text)}
+                        placeholder="Name *"
+                        value={formValues.name}
                     />
                     <TextInput
                         style={styles.input}
@@ -105,9 +113,9 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
                             handleInputChange('price', parseFloat(formValues.price))
                         }}
                     />
-                    <TouchableOpacity onPress={openImagePicker}>
+                    <TouchableOpacity style={styles.imageInput} onPress={openImagePicker}>
                       <Image 
-                          style={{width:80, height:80, alignSelf:'center'}}
+                          style={{width:80, height:80}}
                           source={
                             formValues.imagePath !== ""
                             ? { uri: formValues.imagePath }
@@ -164,6 +172,13 @@ const styles = StyleSheet.create({
       margin: 10,
       elevation: 5,
       backgroundColor: '#75F4F4',
+    },
+    imageInput: {
+      borderRadius: 20,
+      margin: 12,
+      elevation: 5,
+      backgroundColor: 'white',
+      alignSelf:'center'
     },
     textStyle: {
       color: '#565554',

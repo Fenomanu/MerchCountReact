@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Text, View, Button, StatusBar, ScrollView, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { Text, View, Button, StatusBar, ScrollView, StyleSheet, Dimensions, FlatList, TextInput } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
 import SmallButton from '../components/SmallButton';
 import ProductButton from '../components/ProductButton';
@@ -7,6 +7,8 @@ import PriceTag from '../components/PriceTag'
 import { CartContext } from '../components/CartContext';
 import GroupButton from '../components/GroupButton';
 
+//const windowWidth = Dimensions.get('window').width;
+//const paddingHorizontalValue = (windowWidth * 35) / 100;
 
 export default function GroupScreen({navigation, route}) {
     const [idGroup, setGroup] = useState(route.params.id);
@@ -62,7 +64,7 @@ export default function GroupScreen({navigation, route}) {
                 <View style={styles.hContainer} key={sagaId}>
                     <View style={styles.hContainer}>
                     {items[sagaId].map((product, index) => (
-                        <ProductButton imagePath={product.imagePath} key={index} onPress={() => console.log(product.name)}/>
+                        <ProductButton imagePath={product.imagePath} idGroup={product.idGroup} key={index} onPress={() => console.log(product.name)}/>
                     ))}
                     </View>
                 </View>
@@ -75,7 +77,7 @@ export default function GroupScreen({navigation, route}) {
                     <View style={styles.hContainer}>
                     {items[sagaId].map((product, index) => (
                         <View key={index}>
-                            <ProductButton imagePath={product.imagePath} onPress={() => console.log(product.name)}/>
+                            <ProductButton imagePath={product.imagePath} idGroup={product.idGroup} onPress={() => console.log(product.name)}/>
                             <Text>{product.name}</Text>
                         </View>
                     ))}
@@ -86,12 +88,12 @@ export default function GroupScreen({navigation, route}) {
     } else {
         content = (
             Object.keys(items).map((sagaId) => (
-                <View style={styles.hContainer} key={sagaId}>
+                <View key={sagaId}>
                 <GroupButton onPress={() => handleButtonPress(sagaId)} titulo={sagas[sagaId]} logoPath={""}/>
                 {expandedButtons.includes(sagaId) && (
                     <View style={styles.hContainer}>
                     {items[sagaId].map((product, index) => (
-                        <ProductButton imagePath={product.imagePath} key={index} onPress={() => console.log(product.name)}/>
+                        <ProductButton imagePath={product.imagePath} idGroup={product.idGroup} key={index} onPress={() => console.log(product.name)}/>
                     ))}
                     </View>
                 )}
@@ -106,17 +108,22 @@ export default function GroupScreen({navigation, route}) {
                 {/* Products */}
                     <View style={styles.block}>
                         <SmallButton title={"Back"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
-                        <Text>{(groups.find((group) => group.id === idGroup))?.name}</Text>
+                        <Text style={{minWidth: 100}}>{(groups.find((group) => group.id === idGroup))?.name}</Text>
                     </View>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => console.log(text)}
+                        placeholder="Search"
+                    />
                     <View style={styles.block}>
                         <PriceTag title={precio}></PriceTag>
                         <SmallButton title="Cart" onPress={ toggleCart } backgroundColor='#FED8B1' />
                     </View>
             </View>
-            <ScrollView contentContainerStyle={styles.wrapper}>
+            <ScrollView style={{flex:1}} contentContainerStyle={styles.wrapper}>
                 {content}
             </ScrollView>
-            <ScrollView horizontal={true} contentContainerStyle={styles.hContainer}>
+            <ScrollView horizontal={true} style={styles.footer} contentContainerStyle={styles.footerContent}>
                 {groups.map((boton) => (
                   boton.id<3 || boton.id > 9?
                   <SmallButton
@@ -124,7 +131,7 @@ export default function GroupScreen({navigation, route}) {
                     title={boton.name}
                     backgroundColor={idGroup == boton.id ? "#90E0F3" : "white" }
                     onPress={() => changeGroup(boton.id)}
-                  />:''
+                  />:null
                 ))}
             </ScrollView>
         </View>
@@ -134,11 +141,9 @@ export default function GroupScreen({navigation, route}) {
 const styles = StyleSheet.create({
     /* Contenedores horizontales y verticales */
     container: {
-      flexDirection: 'column',
-      alignItems: 'center',
-      marginTop: 24,
-      backgroundColor: '#FFC0CB',
-      flex:1
+      flex: 1,
+      alignItems: 'stretch',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     productList: {
       backgroundColor: '#565554',
@@ -158,7 +163,9 @@ const styles = StyleSheet.create({
     },  
     hContainer: {
       flexDirection: 'row',
+      flex:0,
       alignItems: 'center',
+      justifyContent: 'space-between',
       backgroundColor: '#FFC0CB'
     },
     block : {
@@ -173,9 +180,29 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       backgroundColor: '#FFC0CB',
       paddingTop: 15,
+      flex:1,
       paddingBottom: 20,
       paddingLeft: 20,
       paddingRight: 20,
       // Puedes agregar otros estilos como padding, margin, etc.
     },
+    footer : {
+        position: 'absolute',
+        bottom: 0,
+        alignSelf: 'center'
+    },
+    footerContent : {
+        paddingHorizontal: 0
+    },
+    input: {
+      height: 40,
+      margin: 12,
+      minWidth : 400,
+      borderRadius:10,
+      backgroundColor: 'white',
+      elevation:5,
+      textAlign: 'center',
+      borderWidth: 0,
+      padding: 10,
+    }
   });
