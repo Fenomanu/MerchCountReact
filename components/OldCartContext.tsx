@@ -11,7 +11,7 @@ const CartProvider = ({ children }) => {
     setIsOpen(!isOpen);
     Animated.timing(widthAnim, {
       toValue: isOpen ? 0 : 500, // Cambia este valor para ajustar el ancho del carrito
-      duration: 1210,
+      duration: 50,
       useNativeDriver: false,
     }).start();
   };

@@ -1,9 +1,10 @@
-import React, { useState, useRef, createContext, useContext } from 'react';
+import React, { useState, useRef, createContext, useContext, useEffect } from 'react';
 import { Animated, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { CartContext } from '../components/CartContext';
 
 export default function CartScreen() {
     const { widthAnim, isOpen, toggleCart } = useContext(CartContext);
+
     if (!isOpen) return null;
     return (
       <TouchableOpacity
