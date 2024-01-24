@@ -1,10 +1,11 @@
-import { Text, View, StatusBar,Button, FlatList } from 'react-native';
+import { Text, View, StatusBar,Button, FlatList, StyleSheet } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
 import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalProduct from '../components/ModalProduct';
 import TableItem from '../components/TableItem';
 import { Picker } from '@react-native-picker/picker';
+import SmallButton from '../components/SmallButton';
 
 
 export default function NewProduct({navigation}) {
@@ -21,7 +22,7 @@ export default function NewProduct({navigation}) {
     }
 
     // Database context
-    const { deleteItem, readAllProducts, createProduct, updateProduct, fetchData, readPublicGroups } = useDatabase();
+    const { deleteItem, readAllProducts, createProduct, updateProduct, fetchData, readPublicGroups, cloneProduct } = useDatabase();
 
     // Group List
     const [products, setProducts] = useState([]);
@@ -89,6 +90,18 @@ export default function NewProduct({navigation}) {
         setProducts(products => products.filter(item => item.id !== itemId));
     };
 
+    // Deleting item function
+    const handleCloneItem = (item) => {
+        // Elimina el elemento de la base de datos utilizando deleteItem
+        cloneProduct(item, (newItem) => {
+            if (typeof newItem === 'function') {
+                // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
+            } else {
+                setProducts(products => [...products, newItem])
+            }
+        })
+    };
+
     useEffect(() => {
         // Load all groups in list
         fetchData('Saga', setSagas)
@@ -97,14 +110,47 @@ export default function NewProduct({navigation}) {
     }, []);
 
     return (
-        <View style = {containerExtra}>
+        <View style = {[styles.container,containerExtra]}>
             <ModalProduct isVisible={isModalVisible} product={focusProduct} sagasInput={sagas} groupsInput={groups} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
-            <GroupButton titulo={"New Product"} onPress={() => openModal(emptyProduct)} logoPath={""}></GroupButton>
+            
+            <View style={styles.hContainer}>
+                <SmallButton title={"Back"} onPress={() => navigation.goBack()} backgroundColor={'white'}></SmallButton>
+                <Text> Products </Text>
+                <SmallButton title={"New\nProduct"} onPress={() => openModal(emptyProduct)} backgroundColor={'#75F4F4'}></SmallButton>
+            </View>
             <FlatList
+                contentContainerStyle={styles.productContainer}
+                style={styles.productList}
                 data={products}
-                renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
+                renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onClone={() => handleCloneItem(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
                 keyExtractor={item => item.id}
             />
         </View>
     );
 }
+const styles = StyleSheet.create({
+    /* Contenedores horizontales y verticales */
+    container: {
+      flexDirection: 'column',
+      marginTop: 24,
+      backgroundColor: '#FFC0CB',
+      flex:1
+    },
+    productList: {
+      margin:20,
+      marginLeft:30,
+      borderRadius:20,
+      borderWidth:5,
+      borderColor: '#d19ba4'
+    },
+    productContainer: {
+      padding:20,
+    },
+    hContainer: {
+      flexDirection: 'row',
+      backgroundColor: '#FFC0CB',
+      justifyContent: 'space-between', // Espacio entre los botones
+      padding: 10, // Añade espacio alrededor de los botones
+      alignItems: 'center'
+    },
+  });

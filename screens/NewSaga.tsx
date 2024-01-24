@@ -1,6 +1,6 @@
-import { Text, View, StatusBar,Button, FlatList } from 'react-native';
+import { Text, View, StatusBar,Button, FlatList, StyleSheet, ScrollView } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
-import GroupButton from '../components/GroupButton';
+import SmallButton from '../components/SmallButton';
 import { useEffect, useState } from 'react';
 import ModalSaga from '../components/ModalSaga';
 import TableItem from '../components/TableItem';
@@ -83,14 +83,49 @@ export default function NewSaga({navigation}) {
     }, []);
 
     return (
-        <View style = {containerExtra}>
+        <View style = {[styles.container,containerExtra]}>
             <ModalSaga isVisible={isModalVisible} saga={focusSaga} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
-            <GroupButton titulo={"New Saga"} onPress={() => openModal(emptySaga)} logoPath={""}></GroupButton>
+            <View style={styles.hContainer}>
+                <SmallButton title={"Back"} onPress={() => navigation.goBack()} backgroundColor={'white'}></SmallButton>
+                <Text> Sagas </Text>
+                <SmallButton title={"New\nSaga"} onPress={() => openModal(emptySaga)} backgroundColor={'#75F4F4'}></SmallButton>
+            </View>
             <FlatList
+                contentContainerStyle={styles.productContainer}
+                style={styles.productList}
                 data={sagas}
                 renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
                 keyExtractor={item => item.id}
-            />
+                />
+                
         </View>
     );
 }
+
+
+const styles = StyleSheet.create({
+    /* Contenedores horizontales y verticales */
+    container: {
+      flexDirection: 'column',
+      marginTop: 24,
+      backgroundColor: '#FFC0CB',
+      flex:1
+    },
+    productList: {
+      margin:20,
+      marginLeft:30,
+      borderRadius:20,
+      borderWidth:5,
+      borderColor: '#d19ba4'
+    },
+    productContainer: {
+      padding:20,
+    },
+    hContainer: {
+      flexDirection: 'row',
+      backgroundColor: '#FFC0CB',
+      justifyContent: 'space-between', // Espacio entre los botones
+      padding: 10, // Añade espacio alrededor de los botones
+      alignItems: 'center'
+    },
+  });

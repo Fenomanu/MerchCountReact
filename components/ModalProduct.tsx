@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Text, View, Modal, StyleSheet, Pressable, TextInput, Button, Image } from 'react-native';
+import { Text, View, Modal, StyleSheet, Pressable, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import CustomPicker from './CustomPicker';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 
 export default function ModalProduct({ isVisible, product, sagasInput, groupsInput, closeModal, onEdit, onCreate }) {
@@ -80,7 +81,7 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('name', text)}
-                        placeholder="Name"
+                        placeholder="Name *"
                         value={formValues.name}
                     />
                     <CustomPicker
@@ -90,7 +91,7 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
                     />
                     <CustomPicker
                       options={groups}
-                      selectedValue={groups.find((item) => item.id == formValues.idGroup)??{name:"Pick a group"}}
+                      selectedValue={groups.find((item) => item.id == formValues.idGroup)??{name:"Pick a group *"}}
                       onValueChange={(value) => handleInputChange('idGroup',value.id)}
                     />
                     <TextInput
@@ -104,24 +105,27 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
                             handleInputChange('price', parseFloat(formValues.price))
                         }}
                     />
-                    <Button title="Seleccionar Imagen" onPress={openImagePicker} />
-                    <Image 
-                        style={{width:80, height:80}}
-                        source={
+                    <TouchableOpacity onPress={openImagePicker}>
+                      <Image 
+                          style={{width:80, height:80, alignSelf:'center'}}
+                          source={
                             formValues.imagePath !== ""
                             ? { uri: formValues.imagePath }
                             : require('../images/images.png') // Ruta a tu imagen por defecto
-                    }/>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={closeModal}>
-                        <Text style={styles.textStyle}>Cerrar Modal</Text>
-                    </Pressable>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={handleSubmit}>
-                        <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
-                    </Pressable>
+                          }/>
+                    </TouchableOpacity>
+                    <View style={styles.hContainer}>
+                      <Pressable
+                          style={styles.buttonClose}
+                          onPress={closeModal}>
+                          <Text style={styles.textStyle}>Close</Text>
+                      </Pressable>
+                      <Pressable
+                          style={styles.button}
+                          onPress={handleSubmit}>
+                          <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
+                      </Pressable>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -133,33 +137,36 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 22,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalView: {
       margin: 20,
-      backgroundColor: 'white',
+      backgroundColor: '#FED8B1',
       borderRadius: 20,
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
+      paddingHorizontal: 25,
+      paddingVertical: 10,
+      justifyContent: 'space-between',
       elevation: 5,
+    },
+    hContainer: {
+      flexDirection: 'row',
+    },
+    buttonClose: {
+      borderRadius: 20,
+      padding: 15,
+      margin: 10,
+      elevation: 5,
+      backgroundColor: '#FFC0CB',
     },
     button: {
       borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-    },
-    buttonClose: {
-      backgroundColor: '#2196F3',
+      padding: 15,
+      margin: 10,
+      elevation: 5,
+      backgroundColor: '#75F4F4',
     },
     textStyle: {
-      color: 'white',
+      color: '#565554',
       fontWeight: 'bold',
       textAlign: 'center',
     },
@@ -170,7 +177,10 @@ const styles = StyleSheet.create({
     input: {
       height: 40,
       margin: 12,
-      borderWidth: 1,
+      borderRadius:10,
+      backgroundColor: 'white',
+      elevation:5,
+      borderWidth: 0,
       padding: 10,
     },
   });

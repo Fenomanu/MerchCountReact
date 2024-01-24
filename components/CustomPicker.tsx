@@ -15,6 +15,7 @@ export default function CustomPicker({ options, selectedValue, onValueChange }) 
         onPress={() => setModalVisible(true)}
       >
         <Text>{selectedValue.name}</Text>
+        <Text>▼</Text>
       </TouchableOpacity>
       <Modal
         animationType='fade'
@@ -42,9 +43,15 @@ export default function CustomPicker({ options, selectedValue, onValueChange }) 
 
 const styles = StyleSheet.create({
   pickerButton: {
-    borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: '#efefef',
     padding: 10,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    height: 40,
+    margin: 12,
+    borderRadius:10,
+    backgroundColor: 'white',
+    elevation:5,
   },
   modalContainer: {
     flex: 1,

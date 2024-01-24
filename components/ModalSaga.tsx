@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image } from 'react-native';
+import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 
@@ -61,19 +61,21 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('name', text)}
-                        placeholder="Name"
+                        placeholder="Sagas name"
                         value={formValues.name}
                     />
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={closeModal}>
-                        <Text style={styles.textStyle}>Cerrar Modal</Text>
-                    </Pressable>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={handleSubmit}>
-                        <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
-                    </Pressable>
+                    <View style={styles.hContainer}>
+                      <TouchableOpacity
+                          style={styles.buttonClose}
+                          onPress={closeModal}>
+                          <Text style={styles.textStyle}>Close</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                          style={styles.button}
+                          onPress={handleSubmit}>
+                          <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
+                      </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -85,33 +87,36 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 22,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalView: {
       margin: 20,
-      backgroundColor: 'white',
+      backgroundColor: '#FED8B1',
       borderRadius: 20,
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
+      paddingHorizontal: 25,
+      paddingVertical: 10,
+      justifyContent: 'space-between',
       elevation: 5,
+    },
+    hContainer: {
+      flexDirection: 'row',
+    },
+    buttonClose: {
+      borderRadius: 20,
+      padding: 15,
+      margin: 10,
+      elevation: 5,
+      backgroundColor: '#FFC0CB',
     },
     button: {
       borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-    },
-    buttonClose: {
-      backgroundColor: '#2196F3',
+      padding: 15,
+      margin: 10,
+      elevation: 5,
+      backgroundColor: '#75F4F4',
     },
     textStyle: {
-      color: 'white',
+      color: '#565554',
       fontWeight: 'bold',
       textAlign: 'center',
     },
@@ -122,7 +127,10 @@ const styles = StyleSheet.create({
     input: {
       height: 40,
       margin: 12,
-      borderWidth: 1,
+      borderRadius:10,
+      backgroundColor: 'white',
+      elevation:5,
+      borderWidth: 0,
       padding: 10,
     },
   });

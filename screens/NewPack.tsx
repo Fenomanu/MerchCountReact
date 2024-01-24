@@ -1,9 +1,10 @@
-import { Text, View, StatusBar,Button, FlatList } from 'react-native';
+import { Text, View, StatusBar,Button, FlatList, StyleSheet } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
 import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalPack from '../components/ModalPack';
 import TableItem from '../components/TableItem';
+import SmallButton from '../components/SmallButton';
 
 
 export default function NewPack({navigation}) {
@@ -96,11 +97,19 @@ export default function NewPack({navigation}) {
     }, []);
 
     return (
-        <View style = {containerExtra}>
+        <View style = {[styles.container,containerExtra]}>
             <ModalPack isVisible={isModalVisible} pack={focusPack} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
-            <GroupButton titulo={"New Pack"} onPress={() => openModal(emptyPack)} logoPath={""}></GroupButton>
-            <GroupButton titulo={"Print Packs"} onPress={printPacks} logoPath={""}></GroupButton>
+            
+            <View style={styles.hContainer}>
+                <SmallButton title={"Back"} onPress={() => navigation.goBack()} backgroundColor={'white'}></SmallButton>
+                <Text>       </Text>
+                <SmallButton title={"Print\nPacks"} onPress={printPacks} backgroundColor={'#75F4F4'}></SmallButton>
+                <Text> Packs </Text>
+                <SmallButton title={"New\nPack"} onPress={() => openModal(emptyPack)} backgroundColor={'#75F4F4'}></SmallButton>
+            </View>
             <FlatList
+                contentContainerStyle={styles.productContainer}
+                style={styles.productList}
                 data={packs}
                 renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
                 keyExtractor={item => item.id}
@@ -108,3 +117,29 @@ export default function NewPack({navigation}) {
         </View>
     );
 }
+const styles = StyleSheet.create({
+    /* Contenedores horizontales y verticales */
+    container: {
+      flexDirection: 'column',
+      marginTop: 24,
+      backgroundColor: '#FFC0CB',
+      flex:1
+    },
+    productList: {
+      margin:20,
+      marginLeft:30,
+      borderRadius:20,
+      borderWidth:5,
+      borderColor: '#d19ba4'
+    },
+    productContainer: {
+      padding:20,
+    },
+    hContainer: {
+      flexDirection: 'row',
+      backgroundColor: '#FFC0CB',
+      justifyContent: 'space-between', // Espacio entre los botones
+      padding: 10, // Añade espacio alrededor de los botones
+      alignItems: 'center'
+    },
+  });

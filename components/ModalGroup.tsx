@@ -88,16 +88,18 @@ export default function ModalGroup({ isVisible, group, closeModal, onEdit, onCre
                         value={formValues.notes}
                         placeholder="Notes"
                     />
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={closeModal}>
-                        <Text style={styles.textStyle}>Cerrar Modal</Text>
-                    </Pressable>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={handleSubmit}>
-                        <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
-                    </Pressable>
+                    <View style={styles.hContainer}>
+                      <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={closeModal}>
+                          <Text style={styles.textStyle}>Cerrar Modal</Text>
+                      </Pressable>
+                      <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={handleSubmit}>
+                          <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
+                      </Pressable>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -148,5 +150,10 @@ const styles = StyleSheet.create({
       margin: 12,
       borderWidth: 1,
       padding: 10,
+    },
+    hContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#FFC0CB'
     },
   });

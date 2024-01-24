@@ -357,6 +357,37 @@ export const DatabaseProvider = ({ children }) => {
           });
       }, (error) => {console.log(error)});
     };
+
+    const cloneProduct = (value, callback: (data : any) => void) => {
+      const query = `INSERT INTO [Product] (name, imagePath, price, idGroup, idSaga)
+      SELECT name, imagePath, price, idGroup, idSaga
+      FROM [Product]
+      WHERE id = ?;`
+      db.transaction((tx) => {
+        tx.executeSql(
+          query,
+          [value.id],
+          (tx, result) => {
+            // Manejar el resultado de la consulta
+              // Crea el nuevo grupo con los datos que desees
+              const newProductId = result.insertId; // Obtén el ID del grupo recién creado
+              const newProduct = {
+                id: newProductId,
+                name: value.name,
+                imagePath : value.imagePath,
+                price : value.price,
+                idGroup : value.idGroup,
+                idSaga : value.idSaga,
+            };
+            callback(newProduct)
+          },
+          (error) => {
+            console.error("Error al ejecutar la consulta:", error);
+            return false;
+          }
+        );
+      });
+    }
     
     // Saga
     const readAllSagas = (callback: (data: any[]) => void) => {
@@ -808,7 +839,7 @@ export const DatabaseProvider = ({ children }) => {
   return (
     <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, deleteItem,
       readPublicGroups, createGroup, updateGroup, 
-      readAllProducts, createProduct, updateProduct, 
+      readAllProducts, createProduct, updateProduct, cloneProduct,
       readAllSagas, createSaga, updateSaga,
       readAllPacks, createPack, updatePack, printPacks, deletePack,
       readAllStock, createStock, updateStock, printStock,
