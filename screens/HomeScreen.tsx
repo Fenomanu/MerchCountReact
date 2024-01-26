@@ -11,12 +11,11 @@ import { useFocusEffect } from '@react-navigation/native';
 export default function HomeScreen({navigation, route}) {
     const [botones, setBotones] = useState([]);
     const [mostSold, setMostSold] = useState([])
-    const [precio, setPrecio] = useState(0);
 
     
     const { database, fetchData, getAllTables, printTableColumns } = useDatabase();
     
-    const { toggleCart, addItem } = useContext(CartContext);
+    const { price, toggleCart, addItem } = useContext(CartContext);
   
     const containerExtra = {
       marginTop: StatusBar.currentHeight
@@ -30,7 +29,6 @@ export default function HomeScreen({navigation, route}) {
         fetchData('Group', setBotones)
       }, [])
     );
-
     /*useEffect(() => {
         // Puedes realizar configuraciones adicionales de la base de datos aquí, como crear tablas, si es necesario.
         // Por ejemplo, puedes ejecutar consultas SQL CREATE TABLE.
@@ -53,7 +51,7 @@ export default function HomeScreen({navigation, route}) {
                 <View style={styles.vContainer}>
                     {/* Primera fila */}
                     <View style={styles.hContainer}>
-                        <PriceTag title={precio}></PriceTag>
+                        <PriceTag title={price}></PriceTag>
                         <SmallButton title="Cart" onPress={ toggleCart } backgroundColor='#FED8B1' />
                     </View>
         

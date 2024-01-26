@@ -80,6 +80,24 @@ const createTables = () => {
                 FOREIGN KEY (idProdElem) REFERENCES Product (id)
               );
             `);
+            // Crea la tabla Product
+            tx.executeSql(`
+              CREATE TABLE IF NOT EXISTS Order (
+                id INTEGER PRIMARY KEY,
+                price REAL,
+                orderTime DATETIME,
+              );
+            `);
+          
+            // Crea la tabla Pack
+            tx.executeSql(`
+              CREATE TABLE IF NOT EXISTS OrderDetail (
+                id INTEGER PRIMARY KEY,
+                ammount INTEGER,
+                idProd INTEGER,
+                FOREIGN KEY (idProd) REFERENCES Product (id)
+              );
+            `);
         }, 
         (error) => console.log(error),
         () => console.log("Done"));

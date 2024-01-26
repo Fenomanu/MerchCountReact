@@ -1,10 +1,10 @@
 import React, { useState, useRef, createContext, useContext, useEffect } from 'react';
-import { Animated, View, TouchableOpacity, Text, StyleSheet, StatusBar, TextInput, ScrollView } from 'react-native';
+import { Animated, View, TouchableOpacity, Text, StyleSheet, StatusBar, TextInput, ScrollView, Button } from 'react-native';
 import { CartContext } from '../components/CartContext';
 import CartItem from '../components/CartItem';
 
 export default function CartScreen() {
-    const { widthAnim, isOpen, toggleCart, items, addOne, removeOne } = useContext(CartContext);
+    const { widthAnim, isOpen, toggleCart, items, addOne, removeOne, deleteItem, price } = useContext(CartContext);
     const containerExtra = {
       marginTop: StatusBar.currentHeight
     }
@@ -22,6 +22,7 @@ export default function CartScreen() {
           <Text>Cart (€)</Text>
           <TextInput
               style={styles.input}
+              value={price.toString()}
               onChangeText={(text) => console.log(text)}
               placeholder="Price"
           />
@@ -29,10 +30,14 @@ export default function CartScreen() {
           <ScrollView horizontal={false}>
           {items ? Object.values(items).map((item) => 
             <CartItem key={item[1].id} item={item} 
-                  onSum={() => {console.log("Sum 1")}} 
-                  onSub={() => {console.log("Sub 1")}}
-                  onDelete={() => {console.log("Deleting")}}/>) : <Text>This is the Cart</Text>}
+                  onSum={() => {addOne(item[1].id)}} 
+                  onSub={() => {removeOne(item[1].id)}}
+                  onDelete={() => {deleteItem(item[1].id)}}/>) : <Text>This is the Cart</Text>}
           </ScrollView>
+          <View style={{flexDirection: 'row'}}>
+            <Button title='Cancel'></Button>
+            <Button title='Buy'></Button>
+          </View>
         </Animated.View>
       </View>
     );
@@ -61,6 +66,7 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     height: '100%',
+    paddingBottom: StatusBar.currentHeight,
     backgroundColor: '#FED8B1',
     alignContent: 'center',
     // Estilos adicionales para el carrito
