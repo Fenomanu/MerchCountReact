@@ -80,12 +80,13 @@ const createTables = () => {
                 FOREIGN KEY (idProdElem) REFERENCES Product (id)
               );
             `);
+            
             // Crea la tabla Product
             tx.executeSql(`
-              CREATE TABLE IF NOT EXISTS Order (
+              CREATE TABLE IF NOT EXISTS [Order] (
                 id INTEGER PRIMARY KEY,
                 price REAL,
-                orderTime DATETIME,
+                orderTime DATETIME
               );
             `);
           
@@ -93,8 +94,10 @@ const createTables = () => {
             tx.executeSql(`
               CREATE TABLE IF NOT EXISTS OrderDetail (
                 id INTEGER PRIMARY KEY,
+                idOrder INTEGER,
                 ammount INTEGER,
                 idProd INTEGER,
+                FOREIGN KEY (idOrder) REFERENCES [Order] (id),
                 FOREIGN KEY (idProd) REFERENCES Product (id)
               );
             `);
@@ -814,6 +817,144 @@ export const DatabaseProvider = ({ children }) => {
       });
     };
 
+    // Order
+    const readOrders = (callback: (data: any[]) => void) => {
+          var query = `SELECT [Order].id AS id, [Order].price, [Order].orderTime,
+                    GROUP_CONCAT(OrderDetail.idProd) AS products,
+                    GROUP_CONCAT(OrderDetail.ammount) AS ammounts
+            FROM [Order]
+            INNER JOIN OrderDetail ON [Order].id = OrderDetail.idOrder
+            GROUP BY id; `
+          database.transaction((tx) => {
+              // Lógica para insertar datos en la base de datos.
+              tx.executeSql(query, [], (_, result) => {
+                  // Manejar el resultado de la inserción si es necesario.
+                  console.log(result)
+                  callback(result.rows._array)
+              },
+              (_,result) => {
+                  console.log(result)
+                  return false;
+              });
+          });
+    };
+
+    const printOrders = () => {
+      console.log("Printing")
+          var query = `SELECT [Order].id AS id, [Order].price, [Order].orderTime,
+                    GROUP_CONCAT(OrderDetail.idProd) AS products,
+                    GROUP_CONCAT(OrderDetail.ammount) AS ammounts
+            FROM [Order]
+            INNER JOIN OrderDetail ON [Order].id = OrderDetail.idOrder
+            GROUP BY id; `
+          database.transaction((tx) => {
+              // Lógica para insertar datos en la base de datos.
+              tx.executeSql(query, [], (_, result) => {
+                  // Manejar el resultado de la inserción si es necesario.
+                  console.log(result.rows._array)
+              },
+              (_,result) => {
+                  console.log(result)
+                  return false;
+              });
+          });
+    };
+  
+    const createOrder = (price, items, callback) => {
+        // items es [[id, [amm,{info}]],...]
+        console.log("Creating Order")
+        var query = `INSERT INTO [Order] VALUES (NULL, ?, CURRENT_TIMESTAMP)`
+        database.transaction((tx) => {
+            // Lógica para insertar datos en la base de datos.
+            tx.executeSql(query, [price], (_, result) => {
+                console.log("Created Order")
+                // Manejar el resultado de la inserción si es necesario.
+                console.log(result)
+                const newOrderId = result.insertId; // Obtén el ID del grupo recién creado
+                // Crea el nuevo grupo con los datos que desees
+                
+              if (items && items.length > 0 && newOrderId >= 0) {
+                console.log("Adding Detail too")
+                query = `INSERT INTO [OrderDetail] (idOrder, ammount, idProd) VALUES (?, ?, ?)`;
+                var params = [newOrderId, items[0][1][0], items[0][0]];
+                var b = false;
+
+                items.forEach(element => {
+                  if (b) {
+                    params.push(newOrderId, element[1][0], element[0]);
+                    query += `, (?, ?, ?)`; // Agrega placeholders adicionales a la sentencia SQL
+                  } else {
+                    b = true;
+                  }
+                });
+
+                console.log(params);
+
+                tx.executeSql(query, params, (_, result) => {
+                  // Manejar el resultado de la inserción si es necesario.
+                  console.log(result);
+                  const newDetails = result.insertId; // Obtén el ID del grupo recién creado
+                  // Crea el nuevo grupo con los datos que desees
+                  if (newDetails) {
+                    callback();
+                  }
+                }, (_, result) => {
+                  console.log(result);
+                  return false;
+                });
+              }
+              else {
+                callback()
+              }
+            },
+            (_,result) => {
+                console.log(result)
+                return false;
+            });
+        });
+    };
+
+    const deleteOrder = (groupId, updatedValues, callback: (data: any) => void) => {
+      console.log("Editing group");
+      var query = `
+          UPDATE [Group]
+          SET name = ?,
+              price = ?,
+              logoPath = ?,
+              adminOnly = ?,
+              notes = ?
+          WHERE id = ?`;
+      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], updatedValues[4], groupId];
+      console.log(params)
+      database.transaction((tx) => {
+          console.log("About to execute")
+          tx.executeSql(query, params, (_, result) => {
+              console.log("Edited group");
+              // Puedes manejar el resultado de la edición si es necesario.
+              console.log(result);
+  
+              // Si deseas obtener los nuevos valores después de la edición,
+              // puedes consultar la base de datos o usar los valores actualizados
+              // directamente de 'updatedValues'.
+              const editedGroup = {
+                  id: groupId,
+                  name: updatedValues[0],
+                  price : updatedValues[1],
+                  logoPath : updatedValues[2],
+                  adminOnly : updatedValues[3],
+                  notes : updatedValues[4],
+              };
+              callback(editedGroup);
+          },
+          (_, result) => {
+              console.log("Execute Error")
+              console.log(result);
+              return false;
+          });
+      }, (error) => {console.log(error)});
+    };
+  
+
     const getGroupItemsBySaga = (idGroup, callback : (data:any) => void) => {
       database.transaction((tx) => {
         // Lógica para insertar datos en la base de datos.
@@ -861,6 +1002,7 @@ export const DatabaseProvider = ({ children }) => {
       readAllSagas, createSaga, updateSaga,
       readAllPacks, createPack, updatePack, printPacks, deletePack,
       readAllStock, createStock, updateStock, printStock,
+      readOrders, createOrder, deleteOrder, printOrders,
       getGroupItemsBySaga, getSagasDict }}>
       {children}
     </DatabaseContext.Provider>

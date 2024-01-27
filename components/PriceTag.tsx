@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 export default function PriceTag({ title }) {
     return (
         <View style={styles.boton}>
-          <Text style={styles.priceTag}>{title}</Text>
+          <Text style={styles.priceTag}>{title} €</Text>
         </View>
     );
 }

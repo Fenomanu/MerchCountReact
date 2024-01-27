@@ -29,6 +29,19 @@ Pack {
     idProdElem : int
 }
 
+Order {
+    id: int
+    price : float
+    orderTime : dateTime
+}
+
+OrderDetail {
+    id : int
+    idOrder : int
+    ammount : int
+    idProd : int
+}
+
 Color palette:
 
 Electric blue : #75F4F4

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useRef, useEffect } from 'react';
 import { Animated, Dimensions  } from 'react-native';
+import { useDatabase } from '../utils/DatabaseCotext'; 
 const { width } = Dimensions.get('window');
 const CartContext = createContext(null);
 
@@ -7,6 +8,7 @@ const CartProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState({});
   const [price, setPrice] = useState(0)
+  const { createOrder,printOrders } = useDatabase();
   const widthAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -73,13 +75,14 @@ const CartProvider = ({ children }) => {
   
       // Asegúrate de actualizar el estado después de realizar los cambios
       setItems({ ...items });
-      setPrice(price + itemPrice);
+      setPrice(price - itemPrice < 0 ? 0 : price - itemPrice);
     }
   };
 
   const deleteItem = (id) => {
     console.log(id);
     console.log("Deleting")
+    const itemPrice = items[id][1].price * items[id][0]
   
     if (items) {
       if (items[id]) {
@@ -90,6 +93,7 @@ const CartProvider = ({ children }) => {
   
       // Asegúrate de actualizar el estado después de realizar los cambios
       setItems({ ...items });
+      setPrice(price - itemPrice < 0 ? 0 : price - itemPrice);
     }
   };
     
@@ -97,8 +101,16 @@ const CartProvider = ({ children }) => {
     setPrice(money)
   };
 
+  const buy = () => {
+    createOrder(price, Object.entries(items), () => {setItems({}); setPrice(0)});
+  }
+
+  const printAll = () => {
+    printOrders();
+  }
+
   return (
-    <CartContext.Provider value={{ isOpen, widthAnim, toggleCart, items, price, addItem, addOne, removeOne, deleteItem }}>
+    <CartContext.Provider value={{ isOpen, printAll, widthAnim, toggleCart, items, price, addItem, addOne, removeOne, deleteItem, buy }}>
       {children}
     </CartContext.Provider>
   );

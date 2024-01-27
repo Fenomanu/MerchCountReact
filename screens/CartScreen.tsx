@@ -4,7 +4,7 @@ import { CartContext } from '../components/CartContext';
 import CartItem from '../components/CartItem';
 
 export default function CartScreen() {
-    const { widthAnim, isOpen, toggleCart, items, addOne, removeOne, deleteItem, price } = useContext(CartContext);
+    const { widthAnim, isOpen, toggleCart, items, addOne, removeOne, deleteItem, price, buy, printAll } = useContext(CartContext);
     const containerExtra = {
       marginTop: StatusBar.currentHeight
     }
@@ -34,9 +34,10 @@ export default function CartScreen() {
                   onSub={() => {removeOne(item[1].id)}}
                   onDelete={() => {deleteItem(item[1].id)}}/>) : <Text>This is the Cart</Text>}
           </ScrollView>
-          <View style={{flexDirection: 'row'}}>
-            <Button title='Cancel'></Button>
-            <Button title='Buy'></Button>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Button title='Cancel' onPress={toggleCart}></Button>
+            <Button title='PrintOrders' onPress={printAll}></Button>
+            <Button title='Buy' onPress={buy}></Button>
           </View>
         </Animated.View>
       </View>
