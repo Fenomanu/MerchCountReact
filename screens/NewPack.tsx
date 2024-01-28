@@ -139,11 +139,11 @@ const styles = StyleSheet.create({
       borderRadius:20,
       borderWidth:5,
       borderColor: '#d19ba4',
+      flex:1,
       backgroundColor: '#FED8B1'
     },
     productContainer: {
       padding:20,
-      flex:1
     },
     hContainer: {
       flexDirection: 'row',

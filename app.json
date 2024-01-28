@@ -1,10 +1,12 @@
 {
   "expo": {
     "name": "MerchCountReact",
-    "slug": "MerchCountReact",
+    "slug": "merchcountreact",
     "version": "1.0.0",
     "orientation": "landscape",
-    "assets": ["./assets/fonts"],
+    "assets": [
+      "./assets/fonts"
+    ],
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -20,12 +22,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/logo_tiny.png",
+        "backgroundColor": "#FFC0CB"
+      },
+      "package": "com.zumis.merchcountreact"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "67fcc9e0-313b-4109-b02a-88d56392891b"
+      }
+    },
+    "owner": "fenomanu"
   }
 }

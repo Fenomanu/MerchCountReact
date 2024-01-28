@@ -8,6 +8,7 @@ import { CartContext } from '../components/CartContext';
 import GroupButton from '../components/GroupButton';
 import SagaButton from '../components/SagaButton';
 import ImgButton from '../components/ImgButton';
+import SmallGButton from '../components/SmallGButton';
 
 
 export default function GroupScreen({navigation, route}) {
@@ -149,12 +150,11 @@ export default function GroupScreen({navigation, route}) {
             <ScrollView horizontal={true} style={styles.footer} contentContainerStyle={styles.footerContent}>
                 {groups.map((boton) => (
                   boton.id<3 || boton.id > 9?
-                  <SmallButton
-                    key={boton.id} // Asegúrate de proporcionar una clave única a cada elemento del mapa.
-                    title={boton.name}
-                    backgroundColor={idGroup == boton.id ? "#90E0F3" : "white" }
-                    onPress={() => changeGroup(boton.id)}
-                  />:null
+                  <SmallGButton
+                      key={boton.id} // Asegúrate de proporcionar una clave única a cada elemento del mapa.
+                      group={boton}
+                      backgroundColor={idGroup == boton.id ? "#90E0F3" : "white" }
+                      onPress={() => changeGroup(boton.id)}/>:null
                 ))}
             </ScrollView>
         </View>
