@@ -24,11 +24,11 @@ export default function CreationScreen({navigation, route}) {
         <View style={styles.vContainer}>
           <CreationButton description={"Groups of products i.e. \nStickers, A4 Prints, Bottles, ..."} iconName={'plus-box-multiple'} title={"New Group"} onPress={() => navigation.navigate('NewGroup')}/>
           <CreationButton description={"The products you want \nto sell"} iconName={'toy-brick-plus'} title={"New Product"}  onPress={() => navigation.navigate('NewProduct')}/>
-          <CreationButton description={"Desc"} iconName={'tag-plus'} title={"New Pack"}  onPress={() => navigation.navigate('NewPack')}/>
+          <CreationButton description={"Old items for sale you don't \neven want to bother \nstoring"} iconName={'cash-plus'} title={"New Stock"}  onPress={() => navigation.navigate('NewStock')}/>
         </View>
         <View style={styles.vContainer}>
           <CreationButton description={"Product sagas for better \norganization i.e. Pokemon, \nMonster Hunter, ..."} iconName={'folder-multiple-plus'} title={"New Saga"}  onPress={() => navigation.navigate('NewSaga')}/>
-          <CreationButton description={"Old items for sale you don't \neven want to bother \nstoring"} iconName={'cash-plus'} title={"New Stock"}  onPress={() => navigation.navigate('NewStock')}/>
+          <CreationButton description={"Packs of products at a \ndifferent price for promotions"} iconName={'tag-plus'} title={"New Pack"}  onPress={() => navigation.navigate('NewPack')}/>
         </View>
       </ScrollView>
     </View>

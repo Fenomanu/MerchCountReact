@@ -52,6 +52,11 @@ export default function GroupScreen({navigation, route}) {
         if(id != idGroup) setItems([])
         setGroup(id)
     }
+
+    const onAdd = (prod) => {
+        addItem(prod)
+        getMostSoldWithPacks(idGroup, setMostSold)
+    }
     
 
     const containerExtra = {
@@ -85,35 +90,34 @@ export default function GroupScreen({navigation, route}) {
             ))
         );
     } else {
-        content = (
-            Object.keys(items).map((sagaId) => (
+        content = Object.keys(items).map((sagaId) => (
+            <>
+              <SagaButton onPress={() => handleButtonPress(sagaId)} saga={sagas[sagaId]} />
+              {expandedButtons.includes(sagaId) && (
                 <>
-                <SagaButton onPress={() => handleButtonPress(sagaId)} saga={sagas[sagaId]}/>
-                {expandedButtons.includes(sagaId) && (
-                    <>
-                    {items[sagaId].map((product, index) => (
-                        <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
-                    ))}
-                    </>
-                )}
+                  {items[sagaId].map((product) => (
+                    <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)} />
+                  ))}
                 </>
-            ))
-        );
-        /*content = (
-            Object.keys(items).map((sagaId) => (
-                <View key={sagaId}>
-                <SagaButton onPress={() => handleButtonPress(sagaId)} saga={sagas[sagaId]}/>
-                {expandedButtons.includes(sagaId) && (
-                    <View style={styles.hContainer}>
-                    {items[sagaId].map((product, index) => (
-                        <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
-                    ))}
-                    </View>
-                )}
-                </View>
-            ))
-        );*/
+              )}
+            </>
+          ));
     }
+    /*
+    content = (
+        Object.keys(items).map((sagaId) => (
+            <>
+            <SagaButton onPress={() => handleButtonPress(sagaId)} saga={sagas[sagaId]}/>
+            {expandedButtons.includes(sagaId) && (
+                <>
+                {items[sagaId].map((product, index) => (
+                    <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
+                ))}
+                </>
+            )}
+            </>
+        ))
+    );*/
 
     return (
         <View style={[styles.container, containerExtra]}>
@@ -123,11 +127,6 @@ export default function GroupScreen({navigation, route}) {
                         <ImgButton name={"backspace"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
                         <Text style={{minWidth: 100}}>{(groups.find((group) => group.id === idGroup))?.name}</Text>
                     </View>
-                    {/*<TextInput
-                        style={styles.input}
-                        onChangeText={(text) => console.log(text)}
-                        placeholder="Search"
-    />*/}
                     <View style={styles.block}>
                         <PriceTag title={price}></PriceTag>
                         <ImgButton name={'cart'} onPress={ toggleCart } backgroundColor='#FED8B1' />
@@ -138,9 +137,13 @@ export default function GroupScreen({navigation, route}) {
                     {content}
                 </ScrollView>
                 <ScrollView horizontal={false} style={styles.productList} contentContainerStyle={styles.productContainer}>
-                    {mostSold.map((prod) => (
-                        <ProductButton key={prod.id} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)}/>
-                    ))}
+                    {mostSold.length > 0 ? (
+                        mostSold.map((prod) => (
+                        <ProductButton key={prod.id} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)} />
+                        ))
+                    ) : (
+                        <Text style={styles.placeHolder}>To see the most sold products you should add and buy a product.</Text>
+                    )}
                 </ScrollView>
             </View>
             <ScrollView horizontal={true} style={styles.footer} contentContainerStyle={styles.footerContent}>
@@ -158,40 +161,6 @@ export default function GroupScreen({navigation, route}) {
     );}
     
 
-    /*return (
-        <View style={[styles.container, containerExtra]}>
-            <View style={styles.hContainer}>
-                
-                    <View style={styles.block}>
-                        <ImgButton name={"backspace"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
-                        <Text style={{minWidth: 100}}>{(groups.find((group) => group.id === idGroup))?.name}</Text>
-                    </View>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => console.log(text)}
-                        placeholder="Search"
-                    />
-                    <View style={styles.block}>
-                        <PriceTag title={price}></PriceTag>
-                        <ImgButton name={'cart'} onPress={ toggleCart } backgroundColor='#FED8B1' />
-                    </View>
-            </View>
-            <ScrollView style={{flex:1}} contentContainerStyle={styles.wrapper}>
-                {content}
-            </ScrollView>
-            <ScrollView horizontal={true} style={styles.footer} contentContainerStyle={styles.footerContent}>
-                {groups.map((boton) => (
-                  boton.id<3 || boton.id > 9?
-                  <SmallButton
-                    key={boton.id} // Asegúrate de proporcionar una clave única a cada elemento del mapa.
-                    title={boton.name}
-                    backgroundColor={idGroup == boton.id ? "#90E0F3" : "white" }
-                    onPress={() => changeGroup(boton.id)}
-                  />:null
-                ))}
-            </ScrollView>
-        </View>
-    );}*/
 
 const styles = StyleSheet.create({
     /* Contenedores horizontales y verticales */
@@ -268,5 +237,11 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       borderWidth: 0,
       padding: 10,
+    },
+    placeHolder: {
+      minHeight: 100,
+      color: 'white',
+      textAlignVertical: 'center',
+      margin:10,
     }
   });

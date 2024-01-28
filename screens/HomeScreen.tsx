@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, ScrollView, StatusBar } from 'react-native';
+import { View, StyleSheet, ScrollView, StatusBar, Text } from 'react-native';
 import GroupButton from '../components/GroupButton';
 import SmallButton from '../components/SmallButton';
 import PriceTag from '../components/PriceTag';
@@ -34,9 +34,13 @@ export default function HomeScreen({navigation, route}) {
           <View style={styles.hContainer}>
               {/* Products */}
               <ScrollView horizontal={true} style={styles.productList} contentContainerStyle={styles.productContainer}>
-                  {mostSold.map((prod) => (
-                    <ProductButton key={prod.id} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)}/>
-                  ))}
+              {mostSold.length > 0 ? (
+                mostSold.map((prod) => (
+                  <ProductButton key={prod.id} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)} />
+                ))
+              ) : (
+                  <Text style={styles.placeHolder}>To see the most sold products you should add and buy a product.</Text>
+              )}
 
               </ScrollView>
               {/* Buttons and price */}
@@ -110,4 +114,10 @@ const styles = StyleSheet.create({
       paddingBottom: 20,
       paddingHorizontal: 100,
     },
+    placeHolder: {
+      minHeight: 100,
+      color: 'white',
+      textAlignVertical: 'center',
+      margin:10,
+    }
   });

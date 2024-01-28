@@ -32,7 +32,6 @@ export default function ModalGroup({ isVisible, group, closeModal, onEdit, onCre
         
         if (!result.canceled) {
             // La imagen seleccionada está en result.uri
-            console.log(result.assets[0].uri);
             handleInputChange('logoPath', result.assets[0].uri)
         }
     };
@@ -43,7 +42,6 @@ export default function ModalGroup({ isVisible, group, closeModal, onEdit, onCre
             ...formValues,
             [fieldName]: value,
         });
-        console.log(value)
     };
 
     const checkValues = () => {

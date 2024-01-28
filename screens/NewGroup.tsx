@@ -1,11 +1,10 @@
 import { Text, View, StatusBar,Button, FlatList, StyleSheet, Alert } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
-import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalGroup from '../components/ModalGroup';
 import TableItem from '../components/TableItem';
-import SmallButton from '../components/SmallButton';
 import ImgButton from '../components/ImgButton';
+import CustomSizeButton from '../components/CustomSizeButton';
 
 
 export default function NewGroup({navigation}) {
@@ -52,8 +51,6 @@ export default function NewGroup({navigation}) {
     }
 
     const handleEditItem = (groupToEdit) => {
-        console.log("This is the group to edit")
-        console.log(groupToEdit)
         updateGroup(groupToEdit.id,[groupToEdit.name, groupToEdit.price, groupToEdit.logoPath, 0, groupToEdit.notes], (editedGroup) => {
             if (typeof editedGroup === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
@@ -111,13 +108,17 @@ export default function NewGroup({navigation}) {
                 <Text> Groups </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptyGroup)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
-            <FlatList
-                contentContainerStyle={styles.productContainer}
-                style={styles.productList}
-                data={groups}
-                renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
-                keyExtractor={item => item.id}
-            />
+            <View style={styles.body}>
+              <CustomSizeButton name={'chevron-left'} onPress={() => navigation.replace('NewStock')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
+              <FlatList
+                  contentContainerStyle={styles.productContainer}
+                  style={styles.productList}
+                  data={groups}
+                  renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
+                  keyExtractor={item => item.id}
+                  />
+                <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewSaga')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
+            </View>
         </View>
     );
 }
@@ -131,7 +132,6 @@ const styles = StyleSheet.create({
     },
     productList: {
       margin:20,
-      marginLeft:30,
       borderRadius:20,
       borderWidth:5,
       borderColor: '#d19ba4',
@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
     },
     productContainer: {
       padding:20,
+      flex:1
     },
     hContainer: {
       flexDirection: 'row',
@@ -147,4 +148,14 @@ const styles = StyleSheet.create({
       padding: 10, // Añade espacio alrededor de los botones
       alignItems: 'center'
     },
+    body: {
+      flexDirection: 'row',
+      backgroundColor: '#FFC0CB',
+      justifyContent: 'space-between', // Espacio entre los botones
+      alignItems: 'center',
+      flex:1
+    },
+    arrow: {
+
+    }
   });

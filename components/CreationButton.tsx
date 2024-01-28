@@ -39,6 +39,5 @@ const styles = StyleSheet.create({
   },
   description: {
     color: '#565554',
-    fontFamily: 'Lemon-Tea'
   },
 });

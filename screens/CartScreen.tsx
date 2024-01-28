@@ -7,7 +7,7 @@ import CustomSizeButton from '../components/CustomSizeButton';
 const { width } = Dimensions.get('window');
 
 export default function CartScreen() {
-    const { isOpen, toggleCart, items, addOne, removeOne, deleteItem, price, buy, printAll, clearCart } = useContext(CartContext);
+    const { isOpen, toggleCart, items, addOne, removeOne, deleteItem, price, buy, changePrice, clearCart } = useContext(CartContext);
     const containerExtra = {
       marginTop: StatusBar.currentHeight
     }
@@ -37,7 +37,8 @@ export default function CartScreen() {
             <TextInput
                 style={styles.input}
                 value={price.toString()}
-                onChangeText={(text) => console.log(text)}
+                keyboardType='numeric'
+                onChangeText={(text) => changePrice(parseFloat(text == "" ? "0" : text))}
                 placeholder="Price"
             />
             <ImgTinyB backgroundColor={'#FFC0CB'} name={'trash-can'} onPress={clearCart}></ImgTinyB>

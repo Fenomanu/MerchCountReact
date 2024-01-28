@@ -45,7 +45,6 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
         
         if (!result.canceled) {
             // La imagen seleccionada está en result.uri
-            console.log(result.assets[0].uri);
             handleInputChange('imagePath', result.assets[0].uri)
         }
     };
@@ -56,8 +55,6 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
           ...formValues,
           [fieldName]: value,
       });
-      console.log(pack)
-      console.log(value)
     };
 
     const checkValues = () => {
@@ -85,7 +82,6 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
 
     const onDeleteElement = (id) => {
       const indiceAEliminar = formValues.idProdElemList.indexOf(id);
-      console.log(indiceAEliminar)
       if (indiceAEliminar !== -1) {
         const nuevaLista = [...formValues.idProdElemList];
         nuevaLista.splice(indiceAEliminar, 1);
@@ -116,7 +112,6 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
                         placeholder="Price"
                         keyboardType='numeric'
                         onBlur={() => {
-                            console.log("Turning To Float")
                             handleInputChange('price', parseFloat(formValues.price? formValues.price : 0))
                         }}
                     />

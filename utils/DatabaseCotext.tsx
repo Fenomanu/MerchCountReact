@@ -8,7 +8,6 @@ const db = SQLite.openDatabase('mydb.db');
 
 const createTables = () => {
     if (db) {
-        console.log("creating tables")
         db.transaction((tx) => {
             // Crea la tabla Group
             tx.executeSql(`
@@ -30,7 +29,6 @@ const createTables = () => {
                 const rowCount = result.rows.item(0).count;
       
                 if (rowCount === 0) {
-                  console.log("Creating default")
                   // Si no existe un registro con el mismo nombre, inserta un registro por defecto
                   tx.executeSql(`
                     INSERT INTO [Group] (name, price, logoPath, adminOnly, notes)
@@ -171,13 +169,11 @@ export const DatabaseProvider = ({ children }) => {
     const fetchData = (tableName: string, callback: (data: any[]) => void) => {
         const query = `SELECT * FROM [${tableName}]`
         if (database) {
-            //console.log("Fetching")
         database.transaction((tx) => {
             // Lógica para recuperar datos de la base de datos.
             tx.executeSql(query, [], (_, result) => {
             // Manejar el resultado de la consulta si es necesario.
             const data = result.rows._array; // Obtener los datos como un arreglo.
-            //console.log(data);
             callback(data);
             // Actualizar el estado o realizar otras acciones según tus necesidades.
             },
@@ -199,7 +195,6 @@ export const DatabaseProvider = ({ children }) => {
             (tx, result) => {
               // Manejar el resultado de la consulta
               const rows = result.rows._array;
-              console.log(rows)
             },
             (error) => {
               console.error("Error al ejecutar la consulta:", error);
@@ -216,7 +211,6 @@ export const DatabaseProvider = ({ children }) => {
             // Lógica para insertar datos en la base de datos.
             tx.executeSql(query, [], (_, result) => {
                 // Manejar el resultado de la inserción si es necesario.
-                console.log(result)
                 callback(result.rows._array)
             },
             (_,result) => {
@@ -227,14 +221,11 @@ export const DatabaseProvider = ({ children }) => {
     };
 
     const createGroup = (items, callback: (data: any) => void) => {
-        console.log("Creating group")
         var query = `INSERT INTO [Group] VALUES (NULL, ?, ?, ?, ?, ?)`
         database.transaction((tx) => {
             // Lógica para insertar datos en la base de datos.
             tx.executeSql(query, items, (_, result) => {
-                console.log("Created group")
                 // Manejar el resultado de la inserción si es necesario.
-                console.log(result)
                 const newGroupId = result.insertId; // Obtén el ID del grupo recién creado
                 // Crea el nuevo grupo con los datos que desees
                 const newGroup = {
@@ -255,7 +246,6 @@ export const DatabaseProvider = ({ children }) => {
     };
 
     const updateGroup = (groupId, updatedValues, callback: (data: any) => void) => {
-      console.log("Editing group");
       var query = `
           UPDATE [Group]
           SET name = ?,
@@ -502,8 +492,10 @@ export const DatabaseProvider = ({ children }) => {
               sagas[element.idSaga].push(element)
             });
             console.log("Sagas array")
-            console.log(sagas['0'][0].imagePath)
-            callback(sagas)
+            if(sagas){
+              callback(sagas)
+            }
+            else {callback({})}
         },
         (_,result) => {
             console.log(result)
@@ -843,7 +835,7 @@ export const DatabaseProvider = ({ children }) => {
     
     const updatePack = (packId, updatedValues, callback: (data: any) => void) => {
       console.log("Editing Pack");
-      console.log(updatedValues[4])
+      console.log(updatedValues[3])
       var query = `
           UPDATE [Product]
           SET name = ?,
@@ -857,7 +849,7 @@ export const DatabaseProvider = ({ children }) => {
       database.transaction((tx) => {
           console.log("About to execute")
           tx.executeSql(query, params, (_, result) => {
-            console.log("Edited group");
+            console.log("Edited pack");
             // Puedes manejar el resultado de la edición si es necesario.
             console.log(result);
             // Si deseas obtener los nuevos valores después de la edición,
@@ -874,13 +866,13 @@ export const DatabaseProvider = ({ children }) => {
             };
 
             tx.executeSql(`DELETE FROM [Pack] WHERE idProdBase=(?)`, [packId], (_,result) => {
-              if (updatedValues[4] && updatedValues[4].length > 0) {
+              if (updatedValues[3] && updatedValues[3].length > 0) {
                 console.log("Adding elements too")
                 query = `INSERT INTO [Pack] (idProdBase, idProdElem) VALUES (?, ?)`;
-                var params = [packId, updatedValues[4][0]];
+                var params = [packId, updatedValues[3][0]];
                 var b = false;
-                console.log(updatedValues[4])
-                updatedValues[4].forEach(element => {
+                console.log(updatedValues[3])
+                updatedValues[3].forEach(element => {
                   if (b) {
                     params.push(packId, element);
                     query += `, (?, ?)`; // Agrega placeholders adicionales a la sentencia SQL
@@ -898,7 +890,7 @@ export const DatabaseProvider = ({ children }) => {
                   const newPackId = result.insertId; // Obtén el ID del grupo recién creado
                   // Crea el nuevo grupo con los datos que desees
                   if (editedPack.idProdElemList) {
-                    editedPack.idProdElemList = editedPack.idProdElemList.concat(updatedValues[4]);
+                    editedPack.idProdElemList = editedPack.idProdElemList.concat(updatedValues[3]);
                     console.log(editedPack.idProdElemList)
                     callback(editedPack);
                   }

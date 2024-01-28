@@ -32,7 +32,6 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
         
         if (!result.canceled) {
             // La imagen seleccionada está en result.uri
-            console.log(result.assets[0].uri);
             handleInputChange('imagePath', result.assets[0].uri)
         }
     };
@@ -43,7 +42,6 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
             ...formValues,
             [fieldName]: value,
         });
-        console.log(value)
     };
 
     const checkValues = () => {
@@ -86,7 +84,6 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
                         placeholder="Price"
                         keyboardType='numeric'
                         onBlur={() => {
-                            console.log("Turning To Float")
                             handleInputChange('price', parseFloat(formValues.price))
                         }}
                     />

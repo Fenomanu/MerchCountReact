@@ -1,11 +1,10 @@
 import { Text, View, StatusBar,Button, FlatList, StyleSheet, Alert } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
-import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalProduct from '../components/ModalProduct';
 import TableItem from '../components/TableItem';
-import SmallButton from '../components/SmallButton';
 import ImgButton from '../components/ImgButton';
+import CustomSizeButton from '../components/CustomSizeButton';
 
 
 export default function NewProduct({navigation}) {
@@ -55,8 +54,6 @@ export default function NewProduct({navigation}) {
     }
 
     const handleEditItem = (productToEdit) => {
-        console.log("This is the product to edit")
-        console.log(productToEdit)
         updateProduct(productToEdit.id,[productToEdit.name, productToEdit.imagePath, productToEdit.price, productToEdit.idGroup, productToEdit.idSaga], (editedProduct) => {
             if (typeof editedProduct === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
@@ -128,13 +125,17 @@ export default function NewProduct({navigation}) {
                 <Text> Products </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptyProduct)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
-            <FlatList
-                contentContainerStyle={styles.productContainer}
-                style={styles.productList}
-                data={products}
-                renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onClone={() => handleCloneItem(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
-                keyExtractor={item => item.id}
-            />
+            <View style={styles.body}>
+              <CustomSizeButton name={'chevron-left'} onPress={() => navigation.replace('NewSaga')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
+                <FlatList
+                    contentContainerStyle={styles.productContainer}
+                    style={styles.productList}
+                    data={products}
+                    renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onClone={() => handleCloneItem(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
+                    keyExtractor={item => item.id}
+                />
+                <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewPack')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
+            </View>
         </View>
     );
 }
@@ -148,7 +149,6 @@ const styles = StyleSheet.create({
     },
     productList: {
       margin:20,
-      marginLeft:30,
       borderRadius:20,
       borderWidth:5,
       borderColor: '#d19ba4',
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     },
     productContainer: {
       padding:20,
+      flex:1
     },
     hContainer: {
       flexDirection: 'row',
@@ -163,5 +164,12 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between', // Espacio entre los botones
       padding: 10, // Añade espacio alrededor de los botones
       alignItems: 'center'
+    },
+    body: {
+      flexDirection: 'row',
+      backgroundColor: '#FFC0CB',
+      justifyContent: 'space-between', // Espacio entre los botones
+      alignItems: 'center',
+      flex:1
     },
   });

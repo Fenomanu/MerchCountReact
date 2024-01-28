@@ -1,11 +1,10 @@
 import { Text, View, StatusBar,Button, FlatList, StyleSheet, Alert } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
-import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalStock from '../components/ModalStock';
 import TableItem from '../components/TableItem';
-import SmallButton from '../components/SmallButton';
 import ImgButton from '../components/ImgButton';
+import CustomSizeButton from '../components/CustomSizeButton';
 
 
 export default function NewStock({navigation}) {
@@ -52,8 +51,6 @@ export default function NewStock({navigation}) {
     }
 
     const handleEditItem = (stockToEdit) => {
-        console.log("This is the product to edit")
-        console.log(stockToEdit)
         updateStock(stockToEdit.id,[stockToEdit.name, stockToEdit.imagePath, stockToEdit.price, stockToEdit.idSaga], (editedStock) => {
             if (typeof editedStock === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
@@ -111,6 +108,8 @@ export default function NewStock({navigation}) {
                 <Text> Stock </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptyStock)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
+            <View style={styles.body}>
+              <CustomSizeButton name={'chevron-left'} onPress={() => navigation.replace('NewPack')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
             <FlatList
                 contentContainerStyle={styles.productContainer}
                 style={styles.productList}
@@ -118,6 +117,8 @@ export default function NewStock({navigation}) {
                 renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
                 keyExtractor={item => item.id}
             />
+            <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewGroup')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
+        </View>
         </View>
     );
 }
@@ -132,7 +133,6 @@ const styles = StyleSheet.create({
     },
     productList: {
       margin:20,
-      marginLeft:30,
       borderRadius:20,
       borderWidth:5,
       borderColor: '#d19ba4',
@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
     },
     productContainer: {
       padding:20,
+      flex:1
     },
     hContainer: {
       flexDirection: 'row',
@@ -147,5 +148,12 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between', // Espacio entre los botones
       padding: 10, // Añade espacio alrededor de los botones
       alignItems: 'center'
+    },
+    body: {
+      flexDirection: 'row',
+      backgroundColor: '#FFC0CB',
+      justifyContent: 'space-between', // Espacio entre los botones
+      alignItems: 'center',
+      flex:1
     },
   });

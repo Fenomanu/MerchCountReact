@@ -1,10 +1,10 @@
 import { Text, View, StatusBar,Button, FlatList, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
-import SmallButton from '../components/SmallButton';
 import { useEffect, useState } from 'react';
 import ModalSaga from '../components/ModalSaga';
 import TableItem from '../components/TableItem';
 import ImgButton from '../components/ImgButton';
+import CustomSizeButton from '../components/CustomSizeButton';
 
 
 export default function NewSaga({navigation}) {
@@ -47,8 +47,6 @@ export default function NewSaga({navigation}) {
     }
 
     const handleEditItem = (sagaToEdit) => {
-        console.log("This is the group to edit")
-        console.log(sagaToEdit)
         updateSaga(sagaToEdit.id,[sagaToEdit.name], (editedSaga) => {
             if (typeof editedSaga === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
@@ -102,13 +100,17 @@ export default function NewSaga({navigation}) {
                 <Text> Sagas </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptySaga)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
-            <FlatList
+            <View style={styles.body}>
+              <CustomSizeButton name={'chevron-left'} onPress={() => navigation.replace('NewGroup')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
+              <FlatList
                 contentContainerStyle={styles.productContainer}
                 style={styles.productList}
                 data={sagas}
                 renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
                 keyExtractor={item => item.id}
                 />
+                <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewProduct')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
+            </View>
                 
         </View>
     );
@@ -125,7 +127,6 @@ const styles = StyleSheet.create({
     },
     productList: {
       margin:20,
-      marginLeft:30,
       borderRadius:20,
       borderWidth:5,
       borderColor: '#d19ba4',
@@ -133,6 +134,7 @@ const styles = StyleSheet.create({
     },
     productContainer: {
       padding:20,
+      flex:1
     },
     hContainer: {
       flexDirection: 'row',
@@ -140,5 +142,12 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between', // Espacio entre los botones
       padding: 10, // Añade espacio alrededor de los botones
       alignItems: 'center'
+    },
+    body: {
+      flexDirection: 'row',
+      backgroundColor: '#FFC0CB',
+      justifyContent: 'space-between', // Espacio entre los botones
+      alignItems: 'center',
+      flex:1
     },
   });

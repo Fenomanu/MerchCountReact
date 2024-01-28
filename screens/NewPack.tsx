@@ -4,8 +4,8 @@ import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalPack from '../components/ModalPack';
 import TableItem from '../components/TableItem';
-import SmallButton from '../components/SmallButton';
 import ImgButton from '../components/ImgButton';
+import CustomSizeButton from '../components/CustomSizeButton';
 
 
 export default function NewPack({navigation}) {
@@ -46,17 +46,12 @@ export default function NewPack({navigation}) {
             if (typeof newItem === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
             } else {
-                console.log(newItem)
                 setPacks(packs => [...packs, newItem])
             }
         });
     }
 
     const handleEditItem = (packToEdit) => {
-        console.log("Editing this")
-        console.log(packToEdit)
-    }
-    const handleEditItem2 = (packToEdit) => {
         console.log(packToEdit)
         updatePack(packToEdit.id, [packToEdit.name, packToEdit.price, 0, packToEdit.idProdElemList], (editedPack) => {
             if (typeof editedPack === 'function') {
@@ -117,6 +112,8 @@ export default function NewPack({navigation}) {
                 <Text> Packs </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptyPack)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
+            <View style={styles.body}>
+              <CustomSizeButton name={'chevron-left'} onPress={() => navigation.replace('NewProduct')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
             <FlatList
                 contentContainerStyle={styles.productContainer}
                 style={styles.productList}
@@ -124,6 +121,8 @@ export default function NewPack({navigation}) {
                 renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
                 keyExtractor={item => item.id}
             />
+            <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewStock')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>
+        </View>
         </View>
     );
 }
@@ -137,7 +136,6 @@ const styles = StyleSheet.create({
     },
     productList: {
       margin:20,
-      marginLeft:30,
       borderRadius:20,
       borderWidth:5,
       borderColor: '#d19ba4',
@@ -145,6 +143,7 @@ const styles = StyleSheet.create({
     },
     productContainer: {
       padding:20,
+      flex:1
     },
     hContainer: {
       flexDirection: 'row',
@@ -152,5 +151,12 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between', // Espacio entre los botones
       padding: 10, // Añade espacio alrededor de los botones
       alignItems: 'center'
+    },
+    body: {
+      flexDirection: 'row',
+      backgroundColor: '#FFC0CB',
+      justifyContent: 'space-between', // Espacio entre los botones
+      alignItems: 'center',
+      flex:1
     },
   });

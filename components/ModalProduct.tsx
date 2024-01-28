@@ -27,14 +27,10 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
     }, [product])
     
     useEffect(() => {
-      console.log("updating sagas")
-      console.log(sagasInput)
       setSagas(sagasInput)
     }, [sagasInput])
     
     useEffect(() => {
-      console.log("updating groups")
-      console.log(groupsInput)
       setGroups(groupsInput)
     }, [groupsInput])
 
@@ -48,7 +44,6 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
         
         if (!result.canceled) {
             // La imagen seleccionada está en result.uri
-            console.log(result.assets[0].uri);
             handleInputChange('imagePath', result.assets[0].uri)
         }
     };
@@ -69,8 +64,6 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
               [fieldName]: value,
           });
         }
-        console.log("Changed")
-        console.log(value)
     };
 
     const checkValues = () => {
@@ -124,7 +117,6 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
                         placeholder="Price"
                         keyboardType='numeric'
                         onBlur={() => {
-                            console.log("Turning To Float")
                             handleInputChange('price', parseFloat(formValues.price))
                         }}
                     />

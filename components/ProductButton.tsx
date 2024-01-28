@@ -3,8 +3,6 @@ import ComposeImage from './ComposeImage';
 
 
 export default function ProductButton({ idGroup, imagePath, onPress}) {
-  console.log("Compose imagePath is ")
-  console.log(imagePath)
     return (
       <View>
         <TouchableOpacity style={styles.container} onPress={onPress}>

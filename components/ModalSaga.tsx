@@ -32,7 +32,6 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
         
         if (!result.canceled) {
             // La imagen seleccionada está en result.uri
-            console.log(result.assets[0].uri);
             handleInputChange('imagePath', result.assets[0].uri)
         }
     };
@@ -43,7 +42,6 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
             ...formValues,
             [fieldName]: value,
         });
-        console.log(value)
     };
 
     const checkValues = () => {
