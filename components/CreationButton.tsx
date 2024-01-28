@@ -1,14 +1,16 @@
-import { StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
-export default function GroupButton({ group, onPress }) {
-
+export default function CreationButton({ title, description, iconName, onPress }) {
   return (
+    <View style={{flexDirection:'row', alignItems: 'center'}}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        {group.id <= 9 ? <MaterialCommunityIcons style={styles.logo} name={group.logoPath} size={70} color='#565554' /> :<Image source={{uri:group.logoPath}} style={styles.logo}></Image>}
-        <Text style={styles.text}>{group.name}</Text>
+        <MaterialCommunityIcons style={styles.logo} name={iconName} size={70} color='#565554' />
+        <Text style={styles.text}>{title}</Text>
       </TouchableOpacity>
+      <Text style={styles.description}>{description}</Text>
+    </View>
   );
 }
 
@@ -33,6 +35,10 @@ const styles = StyleSheet.create({
     marginTop:10,
     color: '#565554',
     textAlign: 'center',
+    fontFamily: 'Lemon-Tea'
+  },
+  description: {
+    color: '#565554',
     fontFamily: 'Lemon-Tea'
   },
 });

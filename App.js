@@ -13,16 +13,24 @@ import NewStock from './screens/NewStock';
 import CartScreen from './screens/CartScreen';
 import { CartProvider } from './components/CartContext';
 import { DatabaseProvider } from './utils/DatabaseCotext';
+import HistoryScreen from './screens/HistoryScreen';
+
+import { useFonts } from 'expo-font';
 
 const Stack = createNativeStackNavigator();
 
 
 
 export default function App() {
+
+  const [fontsLoaded] = useFonts({
+    'Lemon-Tea': require('./assets/fonts/LemonTea.ttf'),
+  });
+
   return (
     <DatabaseProvider>
       <CartProvider>
-        <View style={{flex:1}}>
+        <View style={styles.container}>
           <NavigationContainer>
             <StatusBar backgroundColor='#d19ba4'/>
             <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown:false}}>
@@ -34,6 +42,7 @@ export default function App() {
               <Stack.Screen name="NewProduct" component={NewProduct} />
               <Stack.Screen name="NewPack" component={NewPack} />
               <Stack.Screen name="NewStock" component={NewStock} />
+              <Stack.Screen name="History" component={HistoryScreen} />
             </Stack.Navigator>
           </NavigationContainer>
           <CartScreen/>
@@ -46,8 +55,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFC0CB',
   },
 });

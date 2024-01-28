@@ -1,31 +1,46 @@
 import React, { useState, useRef, createContext, useContext, useEffect } from 'react';
-import { Animated, View, TouchableOpacity, Text, StyleSheet, StatusBar, TextInput, ScrollView, Button } from 'react-native';
+import { Animated, Dimensions, View, TouchableOpacity, Text, StyleSheet, StatusBar, TextInput, ScrollView, Button } from 'react-native';
 import { CartContext } from '../components/CartContext';
 import CartItem from '../components/CartItem';
+import ImgTinyB from '../components/ImgTinyB';
+import CustomSizeButton from '../components/CustomSizeButton';
+const { width } = Dimensions.get('window');
 
 export default function CartScreen() {
-    const { widthAnim, isOpen, toggleCart, items, addOne, removeOne, deleteItem, price, buy, printAll } = useContext(CartContext);
+    const { isOpen, toggleCart, items, addOne, removeOne, deleteItem, price, buy, printAll, clearCart } = useContext(CartContext);
     const containerExtra = {
       marginTop: StatusBar.currentHeight
     }
+    const widthAnim = useRef(new Animated.Value(0)).current;
+  
+    useEffect(() => {
+      // Configura la animación del ancho cada vez que isOpen cambie
+      const toValue = isOpen ? width/2 : 0; // Ajusta los valores según corresponda
+      
+      Animated.timing(widthAnim, {
+        toValue,
+        duration: 0,
+        useNativeDriver: false,
+      }).start();
+    }, [isOpen]);
 
     if (!isOpen) return null;
     return (
-      <View
-      style={styles.container}>
+      <View style={styles.container}>
         <TouchableOpacity style={styles.back}
           activeOpacity={1}
           onPressOut={toggleCart} // Esto se activa cuando tocas fuera del área del carrito
         />
         <Animated.View style={[styles.cart, { width: widthAnim }, containerExtra]} onStartShouldSetResponder={() => true}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text>Cart (€)</Text>
-          <TextInput
-              style={styles.input}
-              value={price.toString()}
-              onChangeText={(text) => console.log(text)}
-              placeholder="Price"
-          />
+          <View style={styles.header}>
+            <Text>Cart (€)</Text>
+            <TextInput
+                style={styles.input}
+                value={price.toString()}
+                onChangeText={(text) => console.log(text)}
+                placeholder="Price"
+            />
+            <ImgTinyB backgroundColor={'#FFC0CB'} name={'trash-can'} onPress={clearCart}></ImgTinyB>
           </View>
           <ScrollView horizontal={false}>
           {items ? Object.values(items).map((item) => 
@@ -34,10 +49,9 @@ export default function CartScreen() {
                   onSub={() => {removeOne(item[1].id)}}
                   onDelete={() => {deleteItem(item[1].id)}}/>) : <Text>This is the Cart</Text>}
           </ScrollView>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Button title='Cancel' onPress={toggleCart}></Button>
-            <Button title='PrintOrders' onPress={printAll}></Button>
-            <Button title='Buy' onPress={buy}></Button>
+          <View style={styles.footer}>
+            <CustomSizeButton width={150} height={70} name='backspace' onPress={toggleCart} backgroundColor={'#FFC0CB'}></CustomSizeButton>
+            <CustomSizeButton width={250} height={70} name='cart-check' onPress={buy} backgroundColor={'#75F4F4'}></CustomSizeButton>
           </View>
         </Animated.View>
       </View>
@@ -73,15 +87,21 @@ const styles = StyleSheet.create({
     // Estilos adicionales para el carrito
   },
   header: {
-
+    flexDirection: 'row',
+    paddingHorizontal: 40, 
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   footer: {
-
+    flexDirection: 'row',
+    paddingHorizontal: 20, 
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   input: {
     height: 40,
     margin: 12,
-    minWidth : 400,
+    minWidth : 200,
     borderRadius:10,
     backgroundColor: 'white',
     elevation:5,

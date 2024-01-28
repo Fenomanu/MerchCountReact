@@ -6,23 +6,23 @@ import ProductButton from '../components/ProductButton';
 import PriceTag from '../components/PriceTag'
 import { CartContext } from '../components/CartContext';
 import GroupButton from '../components/GroupButton';
+import SagaButton from '../components/SagaButton';
+import ImgButton from '../components/ImgButton';
 
-//const windowWidth = Dimensions.get('window').width;
-//const paddingHorizontalValue = (windowWidth * 35) / 100;
 
 export default function GroupScreen({navigation, route}) {
     const [idGroup, setGroup] = useState(route.params.id);
     const [groups, setGroupList] = useState([])
     const [sagas, setSagas] = useState({})
+    const [mostSold, setMostSold] = useState([])
     // Accede a los parámetros pasados
     const [items, setItems] = useState([])
-    const [precio, setPrecio] = useState(0);
 
     
     const [expandedButtons, setExpandedButtons] = useState([]);
 
-    const {getGroupItemsBySaga, fetchData, getSagasDict} = useDatabase()
-    const { toggleCart } = useContext(CartContext);
+    const {getGroupItemsBySaga, fetchData, getSagasDict, getButtonsWithPacks, getMostSoldWithPacks} = useDatabase()
+    const { price, toggleCart, addItem } = useContext(CartContext);
 
     useEffect(() => {
         fetchData('Group', setGroupList)
@@ -33,7 +33,9 @@ export default function GroupScreen({navigation, route}) {
     useEffect(() => {
         handleButtonPress(-1)
         setItems([])
-        getGroupItemsBySaga(idGroup, setItems)
+        getMostSoldWithPacks(idGroup, setMostSold)
+        if(idGroup==1) getButtonsWithPacks(setItems)
+        else getGroupItemsBySaga(idGroup, setItems)
     }, [idGroup])
 
     const handleButtonPress = (buttonId) => {
@@ -64,7 +66,7 @@ export default function GroupScreen({navigation, route}) {
                 <View style={styles.hContainer} key={sagaId}>
                     <View style={styles.hContainer}>
                     {items[sagaId].map((product, index) => (
-                        <ProductButton imagePath={product.imagePath} idGroup={product.idGroup} key={index} onPress={() => console.log(product.name)}/>
+                        <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
                     ))}
                     </View>
                 </View>
@@ -76,10 +78,7 @@ export default function GroupScreen({navigation, route}) {
                 <View style={styles.hContainer} key={sagaId}>
                     <View style={styles.hContainer}>
                     {items[sagaId].map((product, index) => (
-                        <View key={index}>
-                            <ProductButton imagePath={product.imagePath} idGroup={product.idGroup} onPress={() => console.log(product.name)}/>
-                            <Text>{product.name}</Text>
-                        </View>
+                        <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
                     ))}
                     </View>
                 </View>
@@ -88,18 +87,32 @@ export default function GroupScreen({navigation, route}) {
     } else {
         content = (
             Object.keys(items).map((sagaId) => (
+                <>
+                <SagaButton onPress={() => handleButtonPress(sagaId)} saga={sagas[sagaId]}/>
+                {expandedButtons.includes(sagaId) && (
+                    <>
+                    {items[sagaId].map((product, index) => (
+                        <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
+                    ))}
+                    </>
+                )}
+                </>
+            ))
+        );
+        /*content = (
+            Object.keys(items).map((sagaId) => (
                 <View key={sagaId}>
-                <GroupButton onPress={() => handleButtonPress(sagaId)} titulo={sagas[sagaId]} logoPath={""}/>
+                <SagaButton onPress={() => handleButtonPress(sagaId)} saga={sagas[sagaId]}/>
                 {expandedButtons.includes(sagaId) && (
                     <View style={styles.hContainer}>
                     {items[sagaId].map((product, index) => (
-                        <ProductButton imagePath={product.imagePath} idGroup={product.idGroup} key={index} onPress={() => console.log(product.name)}/>
+                        <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
                     ))}
                     </View>
                 )}
                 </View>
             ))
-        );
+        );*/
     }
 
     return (
@@ -107,7 +120,50 @@ export default function GroupScreen({navigation, route}) {
             <View style={styles.hContainer}>
                 {/* Products */}
                     <View style={styles.block}>
-                        <SmallButton title={"Back"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
+                        <ImgButton name={"backspace"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
+                        <Text style={{minWidth: 100}}>{(groups.find((group) => group.id === idGroup))?.name}</Text>
+                    </View>
+                    {/*<TextInput
+                        style={styles.input}
+                        onChangeText={(text) => console.log(text)}
+                        placeholder="Search"
+    />*/}
+                    <View style={styles.block}>
+                        <PriceTag title={price}></PriceTag>
+                        <ImgButton name={'cart'} onPress={ toggleCart } backgroundColor='#FED8B1' />
+                    </View>
+            </View>
+            <View style={{flex:1, flexDirection: 'row'}}>
+                <ScrollView style={styles.contentCont} contentContainerStyle={styles.wrapper}>
+                    {content}
+                </ScrollView>
+                <ScrollView horizontal={false} style={styles.productList} contentContainerStyle={styles.productContainer}>
+                    {mostSold.map((prod) => (
+                        <ProductButton key={prod.id} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)}/>
+                    ))}
+                </ScrollView>
+            </View>
+            <ScrollView horizontal={true} style={styles.footer} contentContainerStyle={styles.footerContent}>
+                {groups.map((boton) => (
+                  boton.id<3 || boton.id > 9?
+                  <SmallButton
+                    key={boton.id} // Asegúrate de proporcionar una clave única a cada elemento del mapa.
+                    title={boton.name}
+                    backgroundColor={idGroup == boton.id ? "#90E0F3" : "white" }
+                    onPress={() => changeGroup(boton.id)}
+                  />:null
+                ))}
+            </ScrollView>
+        </View>
+    );}
+    
+
+    /*return (
+        <View style={[styles.container, containerExtra]}>
+            <View style={styles.hContainer}>
+                
+                    <View style={styles.block}>
+                        <ImgButton name={"backspace"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
                         <Text style={{minWidth: 100}}>{(groups.find((group) => group.id === idGroup))?.name}</Text>
                     </View>
                     <TextInput
@@ -116,8 +172,8 @@ export default function GroupScreen({navigation, route}) {
                         placeholder="Search"
                     />
                     <View style={styles.block}>
-                        <PriceTag title={precio}></PriceTag>
-                        <SmallButton title="Cart" onPress={ toggleCart } backgroundColor='#FED8B1' />
+                        <PriceTag title={price}></PriceTag>
+                        <ImgButton name={'cart'} onPress={ toggleCart } backgroundColor='#FED8B1' />
                     </View>
             </View>
             <ScrollView style={{flex:1}} contentContainerStyle={styles.wrapper}>
@@ -135,25 +191,32 @@ export default function GroupScreen({navigation, route}) {
                 ))}
             </ScrollView>
         </View>
-    );}
-    
+    );}*/
 
 const styles = StyleSheet.create({
     /* Contenedores horizontales y verticales */
     container: {
       flex: 1,
       alignItems: 'stretch',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: '#FFC0CB'
+    },
+    contentCont: {
+      flex: 1,
+      marginBottom: 100,
     },
     productList: {
       backgroundColor: '#565554',
-      padding:40,
+      maxWidth: 180,
       margin:20,
       marginLeft:30,
-      marginTop:30,
+      marginBottom: 100,
+      marginTop:20,
       borderRadius:20,
       borderWidth:5,
       borderColor: '#d19ba4'
+    },
+    productContainer: {
+      padding:25,
     },
     vContainer: {
       flexDirection: 'column',
@@ -169,18 +232,19 @@ const styles = StyleSheet.create({
       backgroundColor: '#FFC0CB'
     },
     block : {
+      marginHorizontal:30,
+      marginVertical:15,
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: '#FFC0CB'
     },
     /* Contenedor de grupos */
     wrapper: {
       flexDirection: 'row',
       flexWrap: 'wrap',
       justifyContent: 'center',
+      alignItems: 'center',
       backgroundColor: '#FFC0CB',
       paddingTop: 15,
-      flex:1,
       paddingBottom: 20,
       paddingLeft: 20,
       paddingRight: 20,

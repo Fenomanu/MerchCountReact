@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Text, View, Modal, StyleSheet, Image, Alert, Button, TouchableWithoutFeedback } from 'react-native';
 import ComposeImage from './ComposeImage';
+import ImgTinyB from './ImgTinyB';
 
 
 export default function CartItem({ item, onSum, onSub, onDelete }) {
@@ -9,17 +10,15 @@ export default function CartItem({ item, onSum, onSub, onDelete }) {
         <TouchableWithoutFeedback style={styles.container}>
             <View style={styles.inContainer}>
                 <ComposeImage idGroup={item[1].idGroup} source={item[1].imagePath}/>
-                <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
-                    <Button color={'#75F4F4'} title='-' onPress={() => onSub()} />
-                    <Text>
-                        {item[0]}
-                    </Text>
-                    <Button color={'#75F4F4'} title='+' onPress={() => onSum()}/>
+                <View  style={styles.text}>
+                    <ImgTinyB backgroundColor={'#FFC0CB'} name='minus' onPress={onSub} />
+                    <Text>{item[0]}</Text>
+                    <ImgTinyB backgroundColor={'#75F4F4'} name='plus' onPress={onSum}/>
                 </View>
                 <Text>
                     {item[1].name}
                 </Text>
-                <Button color={'#75F4F4'} title='Delete' onPress={() => onDelete()}/>
+                <ImgTinyB backgroundColor={'#FFC0CB'} name='trash-can' onPress={onDelete}/>
             </View>
         </TouchableWithoutFeedback>
     );
@@ -34,16 +33,14 @@ const styles = StyleSheet.create({
     },
     inContainer: {
       flexDirection:'row', 
+      paddingHorizontal:20,
       justifyContent: 'space-between',
-      paddingBottom: 3,
       marginVertical: 5,
       alignItems:'center'
     },
-    button: {
-      borderRadius: 20,
-      padding: 10,
-      margin: 10,
-      elevation: 5,
-      backgroundColor: '#75F4F4',
+    text: {
+        flexDirection:'row', 
+        justifyContent: 'space-between',
+        alignItems:'center'
     },
 })

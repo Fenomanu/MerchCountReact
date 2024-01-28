@@ -1,0 +1,68 @@
+Date : 2024-01-28 00:53:44
+Directory : c:\Users\Manu\Documents\GitHub\MerchCountReact
+Total : 37 files,  18263 codes, 324 comments, 378 blanks, all 18965 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          3 |     14,395 |          0 |          3 |     14,398 |
+| TypeScript JSX     |         31 |      3,808 |        324 |        367 |      4,499 |
+| JavaScript         |          2 |         56 |          0 |          7 |         63 |
+| JSON with Comments |          1 |          4 |          0 |          1 |          5 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                         | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                            |         37 |     18,263 |        324 |        378 |     18,965 |
+| . (Files)                                                                    |          6 |     14,455 |          0 |         11 |     14,466 |
+| components                                                                   |         19 |      1,440 |         91 |        131 |      1,662 |
+| screens                                                                      |         10 |      1,105 |        106 |        118 |      1,329 |
+| utils                                                                        |          2 |      1,263 |        127 |        118 |      1,508 |
++------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                     | language           | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\App.js                        | JavaScript         |         50 |          0 |          6 |         56 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\app.json                      | JSON               |         30 |          0 |          1 |         31 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\babel.config.js               | JavaScript         |          6 |          0 |          1 |          7 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\CartContext.tsx    | TypeScript JSX     |         97 |          5 |         17 |        119 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\CartItem.tsx       | TypeScript JSX     |         44 |          1 |          4 |         49 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ComposeImage.tsx   | TypeScript JSX     |         57 |         60 |          7 |        124 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\CustomPicker.tsx   | TypeScript JSX     |         69 |          0 |          4 |         73 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\GroupButton.tsx    | TypeScript JSX     |         31 |          0 |          5 |         36 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\HistoryItem.tsx    | TypeScript JSX     |         28 |          1 |          4 |         33 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalGroup.tsx     | TypeScript JSX     |        169 |          4 |         10 |        183 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalPack.tsx      | TypeScript JSX     |        213 |          5 |         16 |        234 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalProduct.tsx   | TypeScript JSX     |        200 |          4 |         12 |        216 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalSaga.tsx      | TypeScript JSX     |        135 |          4 |         10 |        149 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalStock.tsx     | TypeScript JSX     |        164 |          4 |         10 |        178 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\OldCartContext.tsx | TypeScript JSX     |         21 |          0 |          5 |         26 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\PackProduct.tsx    | TypeScript JSX     |         30 |          1 |          4 |         35 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\PriceTag.tsx       | TypeScript JSX     |         26 |          0 |          2 |         28 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ProductButton.tsx  | TypeScript JSX     |         38 |          0 |          3 |         41 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\SagaDropDown.tsx   | TypeScript JSX     |         18 |          0 |          4 |         22 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\SearchResult.tsx   | TypeScript JSX     |         30 |          1 |          4 |         35 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\SmallButton.tsx    | TypeScript JSX     |         27 |          0 |          6 |         33 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\components\TableItem.tsx      | TypeScript JSX     |         43 |          1 |          4 |         48 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\package-lock.json             | JSON               |     14,331 |          0 |          1 |     14,332 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\package.json                  | JSON               |         34 |          0 |          1 |         35 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\CartScreen.tsx        | TypeScript JSX     |         86 |          2 |          4 |         92 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\CreationScreen.tsx    | TypeScript JSX     |         49 |          3 |          4 |         56 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\GroupScreen.tsx       | TypeScript JSX     |        182 |          9 |         17 |        208 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\HistoryScreen.tsx     | TypeScript JSX     |         76 |          3 |          7 |         86 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\HomeScreen.tsx        | TypeScript JSX     |        100 |         16 |         11 |        127 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewGroup.tsx          | TypeScript JSX     |        120 |         14 |         14 |        148 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewPack.tsx           | TypeScript JSX     |        128 |         14 |         14 |        156 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewProduct.tsx        | TypeScript JSX     |        133 |         17 |         15 |        165 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewSaga.tsx           | TypeScript JSX     |        111 |         14 |         17 |        142 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewStock.tsx          | TypeScript JSX     |        120 |         14 |         15 |        149 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\tsconfig.json                 | JSON with Comments |          4 |          0 |          1 |          5 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\utils\DatabaseCotext.tsx      | TypeScript JSX     |      1,082 |        114 |         75 |      1,271 |
+| c:\Users\Manu\Documents\GitHub\MerchCountReact\utils\DatabaseManager.tsx     | TypeScript JSX     |        181 |         13 |         43 |        237 |
+| Total                                                                        |                    |     18,263 |        324 |        378 |     18,965 |
++------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

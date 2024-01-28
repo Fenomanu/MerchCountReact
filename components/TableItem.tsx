@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Text, View, Modal, StyleSheet, Pressable, Alert, Button } from 'react-native';
+import ImgTinyB from './ImgTinyB';
 
 
 export default function TableItem({ item, onEdit, onClone = undefined, onDelete }) {
@@ -13,15 +14,15 @@ export default function TableItem({ item, onEdit, onClone = undefined, onDelete 
                 {item.name}
             </Text>
             <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
-                <Button color={'#75F4F4'} title='Edit' onPress={() => onEdit()}></Button>
+                <ImgTinyB name={'pencil'} backgroundColor={'#75F4F4'} onPress={() => onEdit()}></ImgTinyB>
                 <Text>       </Text>
                 {onClone ? (
                     <>
-                    <Button color={'#75F4F4'} title='Clone' onPress={() => onClone()} />
+                    <ImgTinyB name={'content-copy'} backgroundColor={'#75F4F4'} onPress={() => onClone()}></ImgTinyB>
                     <Text>       </Text>
                     </>
                 ) : null}
-                <Button color={'#75F4F4'} title='Delete' onPress={() => onDelete()}></Button>
+                <ImgTinyB name={'trash-can'} backgroundColor={'#FFC0CB'} onPress={() => onDelete()}></ImgTinyB>
             </View>
         </View>
     );
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
       borderBottomWidth: 1,
       paddingBottom: 3,
       marginVertical: 5,
-      alignItems:'center'
+      alignItems:'center',
     },
     button: {
       borderRadius: 20,

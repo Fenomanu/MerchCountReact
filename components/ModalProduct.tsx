@@ -6,6 +6,7 @@ import CustomPicker from './CustomPicker';
 
 export default function ModalProduct({ isVisible, product, sagasInput, groupsInput, closeModal, onEdit, onCreate }) {
     const [formValues, setFormValues] = useState(product);
+    const [correct, setCorrect] = useState(true)
     const [sagas, setSagas] = useState(sagasInput);
     const [groups, setGroups] = useState(groupsInput);
     const defaultSaga = {id:0, name:"No saga"}
@@ -21,6 +22,7 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
     }, []);
 
     useEffect(() => {
+        setCorrect(true)
         setFormValues(product)
     }, [product])
     
@@ -71,9 +73,22 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
         console.log(value)
     };
 
+    const checkValues = () => {
+      if(formValues.name != ""
+        && formValues.idGroup > 0
+        && formValues.price > 0
+        && formValues.imagePath != "") return true
+      return false
+    }
     const handleSubmit = () => {
+      if (checkValues()){
         formValues.id == -1 ? onCreate(formValues) : onEdit(formValues)
+        setCorrect(true);
         closeModal()
+      }
+      else {
+        setCorrect(false);
+      }
     }
     
     return (
@@ -81,11 +96,11 @@ export default function ModalProduct({ isVisible, product, sagasInput, groupsInp
             animationType='slide'
             transparent={true}
             visible={isVisible}
-            
             onRequestClose={closeModal}>
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                     <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Product</Text>
+                    {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
                     <CustomPicker
                       options={groups}
                       selectedValue={groups.find((item) => item.id == formValues.idGroup)??{name:"Pick a group *"}}

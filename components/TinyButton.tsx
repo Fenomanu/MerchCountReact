@@ -1,31 +1,32 @@
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function SmallButton({ title, onPress, backgroundColor }) {
-  
+
+export default function TinyButton({ name, onPress, backgroundColor }) {
     const buttonStyle = {
-        backgroundColor: backgroundColor, // Usamos 'blue' como valor por defecto
+        backgroundColor: backgroundColor,
     };
 
     return (
         <TouchableOpacity style={[styles.boton, buttonStyle]} onPress={onPress}>
-          <Text style={styles.texto}>{title}</Text>
+          <Text style={styles.texto}>{name}</Text>
         </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
   boton: {
-    minHeight:80,
-    height:80,
-    minWidth:80,
-    width:80,
-    borderRadius: 20,
+    minHeight:40,
+    height: 40,
+    minWidth:40,
+    Width: 40,
     justifyContent: 'center',
+    borderRadius: 5,
     margin: 10,
     elevation:5
   },
   texto: {
-    color: '#565554',
-    textAlign: 'center',
+    margin: 10,
+    alignSelf:'center',
   },
 });

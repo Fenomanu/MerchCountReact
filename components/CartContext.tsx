@@ -1,7 +1,5 @@
 import React, { createContext, useState, useRef, useEffect } from 'react';
-import { Animated, Dimensions  } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext'; 
-const { width } = Dimensions.get('window');
 const CartContext = createContext(null);
 
 const CartProvider = ({ children }) => {
@@ -9,18 +7,6 @@ const CartProvider = ({ children }) => {
   const [items, setItems] = useState({});
   const [price, setPrice] = useState(0)
   const { createOrder,printOrders } = useDatabase();
-  const widthAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    // Configura la animación del ancho cada vez que isOpen cambie
-    const toValue = isOpen ? width/2 : 0; // Ajusta los valores según corresponda
-    
-    Animated.timing(widthAnim, {
-      toValue,
-      duration: 20,
-      useNativeDriver: false,
-    }).start();
-  }, [isOpen]);
 
   const toggleCart = () => {
     setIsOpen(!isOpen);
@@ -96,6 +82,12 @@ const CartProvider = ({ children }) => {
       setPrice(price - itemPrice < 0 ? 0 : price - itemPrice);
     }
   };
+
+  const clearCart = () => {
+      // Asegúrate de actualizar el estado después de realizar los cambios
+      setItems({});
+      setPrice(0);
+  };
     
   const changePrice = (money) => {
     setPrice(money)
@@ -110,7 +102,7 @@ const CartProvider = ({ children }) => {
   }
 
   return (
-    <CartContext.Provider value={{ isOpen, printAll, widthAnim, toggleCart, items, price, addItem, addOne, removeOne, deleteItem, buy }}>
+    <CartContext.Provider value={{ isOpen, printAll, toggleCart, items, price, addItem, addOne, removeOne, deleteItem, buy, clearCart }}>
       {children}
     </CartContext.Provider>
   );

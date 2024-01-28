@@ -4,6 +4,7 @@
     "slug": "MerchCountReact",
     "version": "1.0.0",
     "orientation": "landscape",
+    "assets": ["./assets/fonts"],
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {

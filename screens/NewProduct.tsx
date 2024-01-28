@@ -1,11 +1,11 @@
-import { Text, View, StatusBar,Button, FlatList, StyleSheet } from 'react-native';
+import { Text, View, StatusBar,Button, FlatList, StyleSheet, Alert } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
 import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalProduct from '../components/ModalProduct';
 import TableItem from '../components/TableItem';
-import { Picker } from '@react-native-picker/picker';
 import SmallButton from '../components/SmallButton';
+import ImgButton from '../components/ImgButton';
 
 
 export default function NewProduct({navigation}) {
@@ -22,7 +22,7 @@ export default function NewProduct({navigation}) {
     }
 
     // Database context
-    const { deleteItem, readAllProducts, createProduct, updateProduct, fetchData, readPublicGroups, cloneProduct } = useDatabase();
+    const { deleteItem, readAllProducts, createProduct, updateProduct, fetchData, readPublicGroups, cloneProduct, checkProductDelete } = useDatabase();
 
     // Group List
     const [products, setProducts] = useState([]);
@@ -83,11 +83,13 @@ export default function NewProduct({navigation}) {
 
     // Deleting item function
     const handleDeleteItem = (itemId) => {
-        // Elimina el elemento de la base de datos utilizando deleteItem
-        deleteItem('Product', itemId);
-        
-        // Actualiza el estado groups excluyendo el elemento eliminado
-        setProducts(products => products.filter(item => item.id !== itemId));
+        checkProductDelete(itemId, ()=> {
+            // Elimina el elemento de la base de datos utilizando deleteItem
+            deleteItem('Product', itemId);
+            
+            // Actualiza el estado groups excluyendo el elemento eliminado
+            setProducts(products => products.filter(item => item.id !== itemId));
+        }, showDeleteNotAllowedAlert)
     };
 
     // Deleting item function
@@ -109,14 +111,22 @@ export default function NewProduct({navigation}) {
         readAllProducts(setProducts)
     }, []);
 
+    const showDeleteNotAllowedAlert = () => {
+        Alert.alert(
+          'No se puede eliminar el producto',
+          'Existen packs asociados a este producto o aparece en el historial de compras.',
+          [{ text: 'OK', onPress: () => console.log('Alerta cerrada') }]
+        );
+      };
+
     return (
         <View style = {[styles.container,containerExtra]}>
             <ModalProduct isVisible={isModalVisible} product={focusProduct} sagasInput={sagas} groupsInput={groups} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
             
             <View style={styles.hContainer}>
-                <SmallButton title={"Back"} onPress={() => navigation.goBack()} backgroundColor={'white'}></SmallButton>
+                <ImgButton name={'backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
                 <Text> Products </Text>
-                <SmallButton title={"New\nProduct"} onPress={() => openModal(emptyProduct)} backgroundColor={'#75F4F4'}></SmallButton>
+                <ImgButton name={'plus'} onPress={() => openModal(emptyProduct)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
             <FlatList
                 contentContainerStyle={styles.productContainer}
@@ -141,7 +151,8 @@ const styles = StyleSheet.create({
       marginLeft:30,
       borderRadius:20,
       borderWidth:5,
-      borderColor: '#d19ba4'
+      borderColor: '#d19ba4',
+      backgroundColor: '#FED8B1'
     },
     productContainer: {
       padding:20,

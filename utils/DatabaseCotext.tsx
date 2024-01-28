@@ -34,8 +34,8 @@ const createTables = () => {
                   // Si no existe un registro con el mismo nombre, inserta un registro por defecto
                   tx.executeSql(`
                     INSERT INTO [Group] (name, price, logoPath, adminOnly, notes)
-                    VALUES ('Packs', 14, 'packs.png', 1, 'You can combine other products into packs'),
-                    ('Stock', 1, 'stock.png', 1, 'You can create stock items for every group'),
+                    VALUES ('Packs', 14, 'tag-multiple', 1, 'You can combine other products into packs'),
+                    ('Stock', 1, 'cash', 1, 'You can create stock items for every group'),
                     ('Not ready', 0, '', 1, 'For admin use only'),
                     ('Not ready', 0, '', 1, 'For admin use only'),
                     ('Not ready', 0, '', 1, 'For admin use only'),
@@ -294,6 +294,28 @@ export const DatabaseProvider = ({ children }) => {
       }, (error) => {console.log(error)});
     };
 
+    const checkGroupDelete = (idGroup, deleteCall: () => void, showAlert: () => void) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          'SELECT COUNT(*) as count FROM Product WHERE idGroup = ?',
+          [idGroup],
+          (_, result) => {
+            const count = result.rows._array[0].count;
+            if (count === 0) {
+              // Paso 2: No hay entradas en Producto, por lo que puedes borrar el grupo
+              deleteCall()
+            } else {
+              showAlert()
+            }
+          },
+          error => {
+            console.error('Error al verificar las entradas en Producto:', error);
+            return false
+          }
+        );
+      });
+    }
+
     // Product
     const readAllProducts = (callback: (data: any[]) => void) => {
       var query = `Select * FROM [Product] WHERE idGroup > 9`
@@ -308,6 +330,46 @@ export const DatabaseProvider = ({ children }) => {
               console.log(result)
               return false;
           });
+      });
+    };
+    
+    const searchProduct = (name, callback: (data: any[]) => void) => {
+      var query = `SELECT Product.id, Product.name, [Group].name AS groupName
+        FROM [Product] INNER JOIN [Group] ON Product.idGroup = [Group].id WHERE [Group].adminOnly = 0 AND Product.name LIKE ?;`
+      database.transaction((tx) => {
+          // Lógica para insertar datos en la base de datos.
+          tx.executeSql(query, [`%${name}%`], (_, result) => {
+              // Manejar el resultado de la consulta si es necesario.
+              console.log(result)
+              callback(result.rows._array)
+          },
+          (_, result) => {
+              console.log(result)
+              return false;
+          });
+      });
+    };
+
+    const getProdNames = (list, callback: (data: {}) => void) => {
+      // Construye la cadena de IDs separada por comas
+      const idString = list.join(',');
+    
+      var query = `SELECT Product.id, Product.name, [Group].name AS [group]
+        FROM [Product] INNER JOIN [Group] ON Product.idGroup = [Group].id WHERE Product.id IN (${idString});`
+    
+      database.transaction((tx) => {
+        tx.executeSql(query, [], (_, result) => {
+          // Manejar el resultado de la consulta si es necesario.
+          const objetoResultado = {};
+          result.rows._array.forEach(objeto => {
+            objetoResultado[objeto.id] = { name: objeto.name, group: objeto.group };
+          });
+          callback(objetoResultado);
+        },
+        (_, result) => {
+          console.log(result);
+          return false;
+        });
       });
     };
     
@@ -409,6 +471,188 @@ export const DatabaseProvider = ({ children }) => {
         );
       });
     }
+
+    const getButtonsWithPacks = (callback : (data:any) => void) => {
+      console.log("Buttons with packs")
+      const query =
+        `SELECT
+            P.id,
+            P.name,
+            CASE
+                WHEN P.idGroup = 1 THEN
+                    (SELECT GROUP_CONCAT(P1.imagePath, ', ')
+                    FROM Product AS P1
+                    INNER JOIN Pack AS Pack1 ON P1.id = Pack1.idProdElem
+                    WHERE Pack1.idProdBase = P.id)
+                ELSE
+                    P.imagePath
+            END AS imagePath,
+            P.price,
+            P.idGroup,
+            P.idSaga
+        FROM Product AS P WHERE P.idGroup = 1;`
+      database.transaction((tx) => {
+        // Lógica para insertar datos en la base de datos.
+        tx.executeSql(query, [], (_, result) => {
+            // Manejar el resultado de la inserción si es necesario.
+            console.log(result.rows._array)
+            var sagas = {}
+            result.rows._array.forEach(element => {
+              if (!sagas[element.idSaga]) sagas[element.idSaga] = []
+              sagas[element.idSaga].push(element)
+            });
+            console.log("Sagas array")
+            console.log(sagas['0'][0].imagePath)
+            callback(sagas)
+        },
+        (_,result) => {
+            console.log(result)
+            return false;
+        });
+      });
+    }
+
+    const getMostSold = (idGroup, callback: (data : any) => void) => {
+      const query = idGroup < 0 ? `SELECT Product.*, SUM(OrderDetail.ammount) AS totalAmount
+        FROM OrderDetail
+        INNER JOIN Product ON OrderDetail.idProd = Product.id
+        GROUP BY OrderDetail.idProd
+        ORDER BY totalAmount DESC
+        LIMIT 10;` 
+        : 
+        `SELECT Product.*, SUM(OrderDetail.ammount) AS totalAmount
+        FROM OrderDetail
+        INNER JOIN Product ON OrderDetail.idProd = Product.id
+        WHERE Product.idGroup = ${idGroup}
+        GROUP BY OrderDetail.idProd
+        ORDER BY totalAmount DESC
+        LIMIT 10;`
+      database.transaction((tx) => {
+        // Lógica para insertar datos en la base de datos.
+        tx.executeSql(query, [], (_, result) => {
+            // Manejar el resultado de la inserción si es necesario.
+            console.log(result)
+            callback(result.rows._array)
+        },
+        (_,result) => {
+            console.log(result)
+            return false;
+        });
+      });
+    }
+
+    const getMostSoldWithPacks = (idGroup, callback: (data : any) => void) => {
+      const query = idGroup < 0 ? `SELECT 
+          P.id,
+          P.name,
+          CASE
+              WHEN P.idGroup = 1 THEN
+                  (SELECT GROUP_CONCAT(P1.imagePath, ', ')
+                  FROM Product AS P1
+                  INNER JOIN Pack AS Pack1 ON P1.id = Pack1.idProdElem
+                  WHERE Pack1.idProdBase = P.id)
+              ELSE
+                  P.imagePath
+          END AS imagePath,
+          P.price,
+          P.idGroup,
+          P.idSaga, 
+          SUM(OrderDetail.ammount) AS totalAmount
+        FROM OrderDetail
+        INNER JOIN Product AS P ON OrderDetail.idProd = P.id
+        GROUP BY OrderDetail.idProd
+        ORDER BY totalAmount DESC
+        LIMIT 10;` 
+        : 
+        `SELECT 
+            P.id,
+            P.name,
+            CASE
+                WHEN P.idGroup = 1 THEN
+                    (SELECT GROUP_CONCAT(P1.imagePath, ', ')
+                    FROM Product AS P1
+                    INNER JOIN Pack AS Pack1 ON P1.id = Pack1.idProdElem
+                    WHERE Pack1.idProdBase = P.id)
+                ELSE
+                    P.imagePath
+            END AS imagePath,
+            P.price,
+            P.idGroup,
+            P.idSaga, 
+            SUM(OrderDetail.ammount) AS totalAmount
+        FROM OrderDetail
+        INNER JOIN Product AS P ON OrderDetail.idProd = P.id
+        WHERE P.idGroup = ${idGroup}
+        GROUP BY OrderDetail.idProd
+        ORDER BY totalAmount DESC
+        LIMIT 10;` 
+      database.transaction((tx) => {
+        // Lógica para insertar datos en la base de datos.
+        tx.executeSql(query, [], (_, result) => {
+            // Manejar el resultado de la inserción si es necesario.
+            console.log(result)
+            callback(result.rows._array)
+        },
+        (_,result) => {
+            console.log(result)
+            return false;
+        });
+      });
+    }
+
+    const checkProductDelete = (idProduct, deleteCall: () => void, showAlert: () => void) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT COUNT(*) as count 
+          FROM Pack
+          WHERE idProdElem = ?
+             OR ? IN (
+                SELECT idProd
+                FROM OrderDetail
+             );`,
+          [idProduct, idProduct],
+          (_, result) => {
+            const count = result.rows._array[0].count;
+            console.log("Before deleting product")
+            console.log(result.rows._array)
+            if (count === 0) {
+              // Paso 2: No hay entradas en Producto, por lo que puedes borrar el grupo
+              deleteCall()
+            } else {
+              showAlert()
+            }
+          },
+          error => {
+            console.error('Error al verificar las entradas en Producto:', error);
+            return false
+          }
+        );
+      });
+    }
+    
+    const checkAdminDelete = (idProduct, deleteCall: () => void, showAlert: () => void) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT COUNT(*) as count FROM OrderDetail WHERE idProd = ?;`,
+          [idProduct],
+          (_, result) => {
+            const count = result.rows._array[0].count;
+            console.log("Before deleting product")
+            console.log(result.rows._array)
+            if (count === 0) {
+              // Paso 2: No hay entradas en Producto, por lo que puedes borrar el grupo
+              deleteCall()
+            } else {
+              showAlert()
+            }
+          },
+          error => {
+            console.error('Error al verificar las entradas en Producto:', error);
+            return false
+          }
+        );
+      });
+    }
     
     // Saga
     const readAllSagas = (callback: (data: any[]) => void) => {
@@ -482,6 +726,28 @@ export const DatabaseProvider = ({ children }) => {
           });
       }, (error) => {console.log(error)});
     };
+
+    const checkSagaDelete = (idGroup, deleteCall: () => void, showAlert: () => void) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          'SELECT COUNT(*) as count FROM Product WHERE idSaga = ?',
+          [idGroup],
+          (_, result) => {
+            const count = result.rows._array[0].count;
+            if (count === 0) {
+              // Paso 2: No hay entradas en Producto, por lo que puedes borrar el grupo
+              deleteCall()
+            } else {
+              showAlert()
+            }
+          },
+          error => {
+            console.error('Error al verificar las entradas en Producto:', error);
+            return false
+          }
+        );
+      });
+    }
 
     // Packs
     const readAllPacks = (callback: (data: any[]) => void) => {
@@ -824,7 +1090,7 @@ export const DatabaseProvider = ({ children }) => {
                     GROUP_CONCAT(OrderDetail.ammount) AS ammounts
             FROM [Order]
             INNER JOIN OrderDetail ON [Order].id = OrderDetail.idOrder
-            GROUP BY id; `
+            GROUP BY [Order].id; `
           database.transaction((tx) => {
               // Lógica para insertar datos en la base de datos.
               tx.executeSql(query, [], (_, result) => {
@@ -846,7 +1112,7 @@ export const DatabaseProvider = ({ children }) => {
                     GROUP_CONCAT(OrderDetail.ammount) AS ammounts
             FROM [Order]
             INNER JOIN OrderDetail ON [Order].id = OrderDetail.idOrder
-            GROUP BY id; `
+            GROUP BY [Order].id; `
           database.transaction((tx) => {
               // Lógica para insertar datos en la base de datos.
               tx.executeSql(query, [], (_, result) => {
@@ -914,47 +1180,42 @@ export const DatabaseProvider = ({ children }) => {
         });
     };
 
-    const deleteOrder = (groupId, updatedValues, callback: (data: any) => void) => {
-      console.log("Editing group");
-      var query = `
-          UPDATE [Group]
-          SET name = ?,
-              price = ?,
-              logoPath = ?,
-              adminOnly = ?,
-              notes = ?
-          WHERE id = ?`;
-      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], updatedValues[4], groupId];
-      console.log(params)
-      database.transaction((tx) => {
-          console.log("About to execute")
-          tx.executeSql(query, params, (_, result) => {
-              console.log("Edited group");
-              // Puedes manejar el resultado de la edición si es necesario.
-              console.log(result);
-  
-              // Si deseas obtener los nuevos valores después de la edición,
-              // puedes consultar la base de datos o usar los valores actualizados
-              // directamente de 'updatedValues'.
-              const editedGroup = {
-                  id: groupId,
-                  name: updatedValues[0],
-                  price : updatedValues[1],
-                  logoPath : updatedValues[2],
-                  adminOnly : updatedValues[3],
-                  notes : updatedValues[4],
-              };
-              callback(editedGroup);
+    const deleteOrder = (orderId, callback: () => void) => {
+      const query = `DELETE FROM [OrderDetail] WHERE idOrder=(?)`;
+      const query2 = `DELETE FROM [Order] WHERE id=(?)`;
+      db.transaction((tx) => {
+        tx.executeSql(
+          query,
+          [orderId],
+          (tx, result) => {
+            // Manejar el resultado de la consulta
+            const rows = result.rows._array;
+            console.log(rows)
+            db.transaction((tx) => {
+              tx.executeSql(
+                query2,
+                [orderId],
+                (tx, result) => {
+                  // Manejar el resultado de la consulta
+                  const rows = result.rows._array;
+                  console.log(rows)
+                  callback()
+                },
+                (error) => {
+                  console.error("Error al ejecutar la consulta:", error);
+                  return false;
+                }
+              );
+            });
           },
-          (_, result) => {
-              console.log("Execute Error")
-              console.log(result);
-              return false;
-          });
-      }, (error) => {console.log(error)});
+          (error) => {
+            console.error("Error al ejecutar la consulta:", error);
+            return false;
+          }
+        );
+      });
     };
   
-
     const getGroupItemsBySaga = (idGroup, callback : (data:any) => void) => {
       database.transaction((tx) => {
         // Lógica para insertar datos en la base de datos.
@@ -996,10 +1257,10 @@ export const DatabaseProvider = ({ children }) => {
     };
     
   return (
-    <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, deleteItem,
-      readPublicGroups, createGroup, updateGroup, 
-      readAllProducts, createProduct, updateProduct, cloneProduct,
-      readAllSagas, createSaga, updateSaga,
+    <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, deleteItem, getButtonsWithPacks,
+      readPublicGroups, createGroup, updateGroup, checkGroupDelete,
+      readAllProducts, createProduct, updateProduct, cloneProduct, getMostSold, searchProduct, getProdNames, checkProductDelete, checkAdminDelete, getMostSoldWithPacks,
+      readAllSagas, createSaga, updateSaga, checkSagaDelete,
       readAllPacks, createPack, updatePack, printPacks, deletePack,
       readAllStock, createStock, updateStock, printStock,
       readOrders, createOrder, deleteOrder, printOrders,

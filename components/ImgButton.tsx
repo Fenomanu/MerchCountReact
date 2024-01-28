@@ -1,14 +1,15 @@
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function SmallButton({ title, onPress, backgroundColor }) {
-  
+
+export default function ImgButton({ name, onPress, backgroundColor }) {
     const buttonStyle = {
-        backgroundColor: backgroundColor, // Usamos 'blue' como valor por defecto
+        backgroundColor: backgroundColor,
     };
 
     return (
         <TouchableOpacity style={[styles.boton, buttonStyle]} onPress={onPress}>
-          <Text style={styles.texto}>{title}</Text>
+          <MaterialCommunityIcons style={styles.texto} name={name} size={40} color='#565554' />
         </TouchableOpacity>
     );
 }
@@ -16,16 +17,15 @@ export default function SmallButton({ title, onPress, backgroundColor }) {
 const styles = StyleSheet.create({
   boton: {
     minHeight:80,
-    height:80,
+    height: 80,
     minWidth:80,
-    width:80,
-    borderRadius: 20,
+    Width: 80,
     justifyContent: 'center',
+    borderRadius: 20,
     margin: 10,
     elevation:5
   },
   texto: {
-    color: '#565554',
-    textAlign: 'center',
+    alignSelf:'center',
   },
 });

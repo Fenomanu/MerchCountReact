@@ -1,10 +1,11 @@
-import { Text, View, StatusBar,Button, FlatList, StyleSheet } from 'react-native';
+import { Text, View, StatusBar,Button, FlatList, StyleSheet, Alert } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
 import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalPack from '../components/ModalPack';
 import TableItem from '../components/TableItem';
 import SmallButton from '../components/SmallButton';
+import ImgButton from '../components/ImgButton';
 
 
 export default function NewPack({navigation}) {
@@ -21,7 +22,7 @@ export default function NewPack({navigation}) {
     }
 
     // Database context
-    const { deleteItem, readAllPacks, createPack, updatePack, printPacks, deletePack } = useDatabase();
+    const { deleteItem, readAllPacks, createPack, updatePack, printPacks, deletePack, checkAdminDelete } = useDatabase();
 
     // Group List
     const [packs, setPacks] = useState([]);
@@ -84,11 +85,13 @@ export default function NewPack({navigation}) {
 
     // Deleting item function
     const handleDeleteItem = (itemId) => {
-        // Elimina el elemento de la base de datos utilizando deleteItem
-        deletePack(itemId);
-        
-        // Actualiza el estado groups excluyendo el elemento eliminado
-        setPacks(packs => packs.filter(item => item.id !== itemId));
+        checkAdminDelete(itemId, ()=> {
+            // Elimina el elemento de la base de datos utilizando deleteItem
+            deletePack(itemId);
+            
+            // Actualiza el estado groups excluyendo el elemento eliminado
+            setPacks(packs => packs.filter(item => item.id !== itemId));
+        }, showDeleteNotAllowedAlert)
     };
 
     useEffect(() => {
@@ -96,16 +99,23 @@ export default function NewPack({navigation}) {
         readAllPacks(setPacks)
     }, []);
 
+    const showDeleteNotAllowedAlert = () => {
+        Alert
+        .alert(
+            'No se puede eliminar el pack',
+            'Aparece en el historial de compras.',
+          [{ text: 'OK', onPress: () => console.log('Alerta cerrada') }]
+        );
+      };
+
     return (
         <View style = {[styles.container,containerExtra]}>
             <ModalPack isVisible={isModalVisible} pack={focusPack} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
             
             <View style={styles.hContainer}>
-                <SmallButton title={"Back"} onPress={() => navigation.goBack()} backgroundColor={'white'}></SmallButton>
-                <Text>       </Text>
-                <SmallButton title={"Print\nPacks"} onPress={printPacks} backgroundColor={'#75F4F4'}></SmallButton>
+                <ImgButton name={'backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
                 <Text> Packs </Text>
-                <SmallButton title={"New\nPack"} onPress={() => openModal(emptyPack)} backgroundColor={'#75F4F4'}></SmallButton>
+                <ImgButton name={'plus'} onPress={() => openModal(emptyPack)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
             <FlatList
                 contentContainerStyle={styles.productContainer}
@@ -130,7 +140,8 @@ const styles = StyleSheet.create({
       marginLeft:30,
       borderRadius:20,
       borderWidth:5,
-      borderColor: '#d19ba4'
+      borderColor: '#d19ba4',
+      backgroundColor: '#FED8B1'
     },
     productContainer: {
       padding:20,

@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCreate }) {
     const [formValues, setFormValues] = useState(stock);
+    const [correct, setCorrect] = useState(true)
 
     // Solicitud de permiso para acceder a la galeria
     useEffect(() => {
@@ -17,6 +18,7 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
       }, []);
 
     useEffect(() => {
+        setCorrect(true)
         setFormValues(stock)
     }, [stock])
     
@@ -44,9 +46,21 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
         console.log(value)
     };
 
+    const checkValues = () => {
+      if(formValues.name != ""
+        && formValues.price > 0
+        && formValues.imagePath != "") return true
+      return false
+    }
     const handleSubmit = () => {
+      if (checkValues()){
         formValues.id == -1 ? onCreate(formValues) : onEdit(formValues)
+        setCorrect(true);
         closeModal()
+      }
+      else {
+        setCorrect(false);
+      }
     }
     
     return (
@@ -58,6 +72,7 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                     <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Stock</Text>
+                    {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('name', text)}

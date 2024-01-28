@@ -1,0 +1,39 @@
+"filename", "language", "JSON", "TypeScript JSX", "JavaScript", "JSON with Comments", "comment", "blank", "total"
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\App.js", "JavaScript", 0, 0, 50, 0, 0, 6, 56
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\app.json", "JSON", 30, 0, 0, 0, 0, 1, 31
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\babel.config.js", "JavaScript", 0, 0, 6, 0, 0, 1, 7
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\CartContext.tsx", "TypeScript JSX", 0, 97, 0, 0, 5, 17, 119
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\CartItem.tsx", "TypeScript JSX", 0, 44, 0, 0, 1, 4, 49
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ComposeImage.tsx", "TypeScript JSX", 0, 57, 0, 0, 60, 7, 124
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\CustomPicker.tsx", "TypeScript JSX", 0, 69, 0, 0, 0, 4, 73
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\GroupButton.tsx", "TypeScript JSX", 0, 31, 0, 0, 0, 5, 36
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\HistoryItem.tsx", "TypeScript JSX", 0, 28, 0, 0, 1, 4, 33
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalGroup.tsx", "TypeScript JSX", 0, 169, 0, 0, 4, 10, 183
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalPack.tsx", "TypeScript JSX", 0, 213, 0, 0, 5, 16, 234
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalProduct.tsx", "TypeScript JSX", 0, 200, 0, 0, 4, 12, 216
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalSaga.tsx", "TypeScript JSX", 0, 135, 0, 0, 4, 10, 149
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ModalStock.tsx", "TypeScript JSX", 0, 164, 0, 0, 4, 10, 178
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\OldCartContext.tsx", "TypeScript JSX", 0, 21, 0, 0, 0, 5, 26
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\PackProduct.tsx", "TypeScript JSX", 0, 30, 0, 0, 1, 4, 35
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\PriceTag.tsx", "TypeScript JSX", 0, 26, 0, 0, 0, 2, 28
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\ProductButton.tsx", "TypeScript JSX", 0, 38, 0, 0, 0, 3, 41
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\SagaDropDown.tsx", "TypeScript JSX", 0, 18, 0, 0, 0, 4, 22
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\SearchResult.tsx", "TypeScript JSX", 0, 30, 0, 0, 1, 4, 35
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\SmallButton.tsx", "TypeScript JSX", 0, 27, 0, 0, 0, 6, 33
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\components\TableItem.tsx", "TypeScript JSX", 0, 43, 0, 0, 1, 4, 48
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\package-lock.json", "JSON", 14331, 0, 0, 0, 0, 1, 14332
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\package.json", "JSON", 34, 0, 0, 0, 0, 1, 35
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\CartScreen.tsx", "TypeScript JSX", 0, 86, 0, 0, 2, 4, 92
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\CreationScreen.tsx", "TypeScript JSX", 0, 49, 0, 0, 3, 4, 56
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\GroupScreen.tsx", "TypeScript JSX", 0, 182, 0, 0, 9, 17, 208
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\HistoryScreen.tsx", "TypeScript JSX", 0, 76, 0, 0, 3, 7, 86
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\HomeScreen.tsx", "TypeScript JSX", 0, 100, 0, 0, 16, 11, 127
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewGroup.tsx", "TypeScript JSX", 0, 120, 0, 0, 14, 14, 148
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewPack.tsx", "TypeScript JSX", 0, 128, 0, 0, 14, 14, 156
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewProduct.tsx", "TypeScript JSX", 0, 133, 0, 0, 17, 15, 165
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewSaga.tsx", "TypeScript JSX", 0, 111, 0, 0, 14, 17, 142
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\screens\NewStock.tsx", "TypeScript JSX", 0, 120, 0, 0, 14, 15, 149
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\tsconfig.json", "JSON with Comments", 0, 0, 0, 4, 0, 1, 5
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\utils\DatabaseCotext.tsx", "TypeScript JSX", 0, 1082, 0, 0, 114, 75, 1271
+"c:\Users\Manu\Documents\GitHub\MerchCountReact\utils\DatabaseManager.tsx", "TypeScript JSX", 0, 181, 0, 0, 13, 43, 237
+"Total", "-", 14395, 3808, 56, 4, 324, 378, 18965

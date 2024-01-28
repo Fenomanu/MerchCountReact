@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreate }) {
     const [formValues, setFormValues] = useState(saga);
+    const [correct, setCorrect] = useState(true)
 
     // Solicitud de permiso para acceder a la galeria
     useEffect(() => {
@@ -17,6 +18,7 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
       }, []);
 
     useEffect(() => {
+        setCorrect(true)
         setFormValues(saga)
     }, [saga])
     
@@ -44,9 +46,19 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
         console.log(value)
     };
 
+    const checkValues = () => {
+      if(formValues.name != "") return true
+      return false
+    }
     const handleSubmit = () => {
+      if (checkValues()){
         formValues.id == -1 ? onCreate(formValues) : onEdit(formValues)
+        setCorrect(true);
         closeModal()
+      }
+      else {
+        setCorrect(false);
+      }
     }
     
     return (
@@ -58,6 +70,7 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                     <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Saga</Text>
+                    {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('name', text)}

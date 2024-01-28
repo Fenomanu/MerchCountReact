@@ -1,8 +1,10 @@
-import { StyleSheet, TouchableOpacity, Image, View, Text, TouchableHighlight } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, View } from 'react-native';
 import ComposeImage from './ComposeImage';
 
 
 export default function ProductButton({ idGroup, imagePath, onPress}) {
+  console.log("Compose imagePath is ")
+  console.log(imagePath)
     return (
       <View>
         <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -22,6 +24,9 @@ export default function ProductButton({ idGroup, imagePath, onPress}) {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 5,
+    minWidth: 100, 
+    minHeight: 100,
+    zIndex: 10,
     margin:10,
   },
   image: {

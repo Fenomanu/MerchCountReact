@@ -1,10 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image } from 'react-native';
+import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image, FlatList } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import PackProduct from './PackProduct';
+import SearchResult from './SearchResult';
+import { useDatabase } from '../utils/DatabaseCotext';
+var increment = 0
 
 
 export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreate }) {
     const [formValues, setFormValues] = useState(pack);
+    const [correct, setCorrect] = useState(true);
+    const [products, setProducts] = useState([])
+    const [prodNames, setProdNames] = useState({})
+
+    const { searchProduct, getProdNames } = useDatabase();
+
 
     // Solicitud de permiso para acceder a la galeria
     useEffect(() => {
@@ -17,8 +27,11 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
       }, []);
 
     useEffect(() => {
-      console.log("Setting form values")
-      console.log(pack)
+      // Crear const de productIds con nombres y cargar aquí con loadNames(formValues.idProdElemList)
+      setCorrect(true)
+      increment = 0
+      setProducts([])
+      if(pack.idProdElemList.length > 0) getProdNames(pack.idProdElemList, setProdNames)
       setFormValues(pack)
     }, [pack])
     
@@ -39,19 +52,46 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
 
     // Para el cambio de un valor en el formulario
     const handleInputChange = (fieldName, value) => {
-        setFormValues({
-            ...formValues,
-            [fieldName]: value,
-        });
-        console.log(pack)
-        console.log(value)
+      setFormValues({
+          ...formValues,
+          [fieldName]: value,
+      });
+      console.log(pack)
+      console.log(value)
     };
 
-    const handleSubmit = () => {
-        console.log(formValues)
-        formValues.id == -1 ? onCreate(formValues) : onEdit(formValues)
-        closeModal()
+    const checkValues = () => {
+      if(formValues.name != ""
+        && formValues.price > 0
+        && formValues.idProdElemList.length > 0) return true
+      return false
     }
+    const handleSubmit = () => {
+      if (checkValues()){
+        formValues.id == -1 ? onCreate(formValues) : onEdit(formValues)
+        setCorrect(true);
+        closeModal()
+      }
+      else {
+        setCorrect(false);
+      }
+    }
+
+    const onAddElement = (id, name, groupName) => {
+      setProdNames({...prodNames,
+        [id]: {name:name, group:groupName}})
+      handleInputChange('idProdElemList', formValues.idProdElemList.concat(id))
+    }
+
+    const onDeleteElement = (id) => {
+      const indiceAEliminar = formValues.idProdElemList.indexOf(id);
+      console.log(indiceAEliminar)
+      if (indiceAEliminar !== -1) {
+        const nuevaLista = [...formValues.idProdElemList];
+        nuevaLista.splice(indiceAEliminar, 1);
+        handleInputChange('idProdElemList', nuevaLista);
+      }
+    };
     
     return (
         <Modal
@@ -61,7 +101,8 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
             onRequestClose={closeModal}>
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
-                    <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Product</Text>
+                    <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Pack</Text>
+                    {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('name', text)}
@@ -76,21 +117,41 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
                         keyboardType='numeric'
                         onBlur={() => {
                             console.log("Turning To Float")
-                            handleInputChange('price', parseFloat(formValues.price))
+                            handleInputChange('price', parseFloat(formValues.price? formValues.price : 0))
                         }}
                     />
-                    <Button title='Add Two Elements to pack' onPress={() => handleInputChange('idProdElemList', [4,5])}/>
-                    <Button title='Print Current' onPress={() => console.log(formValues)}/>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={closeModal}>
-                        <Text style={styles.textStyle}>Cerrar Modal</Text>
-                    </Pressable>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={handleSubmit}>
-                        <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
-                    </Pressable>
+                    
+                    <FlatList
+                        contentContainerStyle={styles.productContainer}
+                        style={styles.productList}
+                        data={formValues.idProdElemList}
+                        renderItem={ ({item}) => <PackProduct item={item} name={prodNames[item]?prodNames[item].name:""} group={prodNames[item]?prodNames[item].group:""} onDelete={ () => onDeleteElement(item)}/> }
+                        keyExtractor={item => (increment++).toString()}
+                    />
+                    <FlatList
+                        contentContainerStyle={styles.searchContainer}
+                        style={styles.searchList}
+                        data={products}
+                        renderItem={ ({item}) => <SearchResult item={item} name={item.name} group={item.groupName} onAdd={ () => onAddElement(item.id, item.name, item.groupName)}/> }
+                        keyExtractor={item => item.id }
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => text.length > 0 ? searchProduct(text, setProducts) : setProducts([])}
+                        placeholder="Search products"
+                    />
+                    <View style={styles.hContainer}>
+                      <Pressable
+                          style={styles.buttonClose}
+                          onPress={closeModal}>
+                          <Text style={styles.textStyle}>Close</Text>
+                      </Pressable>
+                      <Pressable
+                          style={styles.button}
+                          onPress={handleSubmit}>
+                          <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
+                      </Pressable>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -98,48 +159,76 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
 }
 
 const styles = StyleSheet.create({
-    centeredView: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 22,
-    },
-    modalView: {
-      margin: 20,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    button: {
-      borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-    },
-    buttonClose: {
-      backgroundColor: '#2196F3',
-    },
-    textStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-      textAlign: 'center',
-    },
-    modalText: {
-      marginBottom: 15,
-      textAlign: 'center',
-    },
-    input: {
-      height: 40,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
-    },
-  });
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: '#FED8B1',
+    borderRadius: 20,
+    paddingHorizontal: 25,
+    paddingVertical: 10,
+    justifyContent: 'space-between',
+    elevation: 5,
+  },
+  hContainer: {
+    flexDirection: 'row',
+  },
+  buttonClose: {
+    borderRadius: 20,
+    padding: 15,
+    margin: 10,
+    elevation: 5,
+    backgroundColor: '#FFC0CB',
+  },
+  button: {
+    borderRadius: 20,
+    padding: 15,
+    margin: 10,
+    elevation: 5,
+    backgroundColor: '#75F4F4',
+  },
+  imageInput: {
+    borderRadius: 20,
+    margin: 12,
+    elevation: 5,
+    backgroundColor: 'white',
+    alignSelf:'center'
+  },
+  textStyle: {
+    color: '#565554',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderRadius:10,
+    backgroundColor: 'white',
+    elevation:5,
+    borderWidth: 0,
+    padding: 10,
+  },
+  productList: {
+    minHeight:30
+  },
+  productContainer: {
+    paddingHorizontal:10,
+  },
+  searchList: {
+    borderRadius:20,
+    borderWidth:5,
+    marginHorizontal:10,
+    borderColor: '#f2c494'
+  },
+  searchContainer: {
+
+  }
+});

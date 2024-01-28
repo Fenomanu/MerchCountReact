@@ -1,10 +1,11 @@
-import { Text, View, StatusBar,Button, FlatList, StyleSheet } from 'react-native';
+import { Text, View, StatusBar,Button, FlatList, StyleSheet, Alert } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
 import GroupButton from '../components/GroupButton';
 import { useEffect, useState } from 'react';
 import ModalGroup from '../components/ModalGroup';
 import TableItem from '../components/TableItem';
 import SmallButton from '../components/SmallButton';
+import ImgButton from '../components/ImgButton';
 
 
 export default function NewGroup({navigation}) {
@@ -21,7 +22,7 @@ export default function NewGroup({navigation}) {
     }
 
     // Database context
-    const { deleteItem, readPublicGroups, createGroup, updateGroup } = useDatabase();
+    const { deleteItem, readPublicGroups, createGroup, updateGroup, checkGroupDelete } = useDatabase();
 
     // Group List
     const [groups, setGroups] = useState([]);
@@ -79,11 +80,14 @@ export default function NewGroup({navigation}) {
 
     // Deleting item function
     const handleDeleteItem = (itemId) => {
-        // Elimina el elemento de la base de datos utilizando deleteItem
-        deleteItem('Group', itemId);
-        
-        // Actualiza el estado groups excluyendo el elemento eliminado
-        setGroups(groups => groups.filter(item => item.id !== itemId));
+        checkGroupDelete(itemId, ()=> {
+            // Elimina el elemento de la base de datos utilizando deleteItem
+            deleteItem('Group', itemId);
+            
+            // Actualiza el estado groups excluyendo el elemento eliminado
+            setGroups(groups => groups.filter(item => item.id !== itemId));
+        }, showDeleteNotAllowedAlert)
+            
     };
 
     useEffect(() => {
@@ -91,13 +95,21 @@ export default function NewGroup({navigation}) {
         readPublicGroups(setGroups)
     }, []);
 
+    const showDeleteNotAllowedAlert = () => {
+        Alert.alert(
+          'No se puede eliminar el grupo',
+          'Existen productos asociados a este grupo.',
+          [{ text: 'OK', onPress: () => console.log('Alerta cerrada') }]
+        );
+      };
+
     return (
         <View style = {[styles.container,containerExtra]}>
             <ModalGroup isVisible={isModalVisible} group={focusGroup} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
             <View style={styles.hContainer}>
-                <SmallButton title={"Back"} onPress={() => navigation.goBack()} backgroundColor={'white'}></SmallButton>
+                <ImgButton name={'backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
                 <Text> Groups </Text>
-                <SmallButton title={"New\nGroup"} onPress={() => openModal(emptyGroup)} backgroundColor={'#75F4F4'}></SmallButton>
+                <ImgButton name={'plus'} onPress={() => openModal(emptyGroup)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
             <FlatList
                 contentContainerStyle={styles.productContainer}
@@ -122,7 +134,8 @@ const styles = StyleSheet.create({
       marginLeft:30,
       borderRadius:20,
       borderWidth:5,
-      borderColor: '#d19ba4'
+      borderColor: '#d19ba4',
+      backgroundColor: '#FED8B1'
     },
     productContainer: {
       padding:20,
