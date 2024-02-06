@@ -14,6 +14,7 @@ export default function NewSaga({navigation}) {
     const emptySaga = {
         id : -1,
         name : "",
+        color : "#90E0F3"
     }
 
     // Database context
@@ -37,7 +38,7 @@ export default function NewSaga({navigation}) {
 
     // Adding item function
     const handleAddItem = (saga) => {
-        createSaga([saga.name], (newItem) => {
+        createSaga([saga.name, saga.color], (newItem) => {
             if (typeof newItem === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
             } else {
@@ -47,7 +48,7 @@ export default function NewSaga({navigation}) {
     }
 
     const handleEditItem = (sagaToEdit) => {
-        updateSaga(sagaToEdit.id,[sagaToEdit.name], (editedSaga) => {
+        updateSaga(sagaToEdit.id,[sagaToEdit.name, sagaToEdit.color], (editedSaga) => {
             if (typeof editedSaga === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
             } else {
@@ -56,7 +57,8 @@ export default function NewSaga({navigation}) {
                       // Modifica el grupo con el ID coincidente
                       return {
                         ...saga,
-                        name: editedSaga.name
+                        name: editedSaga.name,
+                        color: editedSaga.color
                       };
                     }
                     // Mantén los demás grupos sin cambios

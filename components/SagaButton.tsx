@@ -4,8 +4,8 @@ import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 export default function SagaButton({ saga, onPress }) {
   return (
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={styles.text}>{saga}</Text>
-        <View style={styles.color}></View>
+        <Text style={styles.text}>{saga.name}</Text>
+        <View style={[styles.color, {backgroundColor: saga.color}]}></View>
       </TouchableOpacity>
   );
 }
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     minHeight: 10,
     maxWidth: 40, 
     maxHeight: 10,
+    elevation: 5,
     alignSelf: 'center',
     borderRadius: 20,
   },

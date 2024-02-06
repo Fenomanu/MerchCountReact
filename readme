@@ -12,6 +12,7 @@ Group {
 Saga {
     id : int
     name : string
+    color : string
 }
 
 Product {

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, StatusBar, Text } from 'react-native';
 import GroupButton from '../components/GroupButton';
 import SmallButton from '../components/SmallButton';
@@ -18,7 +18,7 @@ export default function HomeScreen({navigation, route}) {
 
   const {fetchData, getButtonsWithPacks, getMostSoldWithPacks } = useDatabase();
   
-  const { price, toggleCart, addItem } = useContext(CartContext);
+  const { price, toggleCart, addItem, bSignal } = useContext(CartContext);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -27,6 +27,10 @@ export default function HomeScreen({navigation, route}) {
       fetchData('Group', setBotones)
     }, [])
   );
+
+  useEffect(() => {
+    getMostSoldWithPacks(-1, setMostSold)
+  }, [bSignal])
 
   return (
       // Outer container

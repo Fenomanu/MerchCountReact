@@ -23,7 +23,7 @@ export default function GroupScreen({navigation, route}) {
     const [expandedButtons, setExpandedButtons] = useState([]);
 
     const {getGroupItemsBySaga, fetchData, getSagasDict, getButtonsWithPacks, getMostSoldWithPacks} = useDatabase()
-    const { price, toggleCart, addItem } = useContext(CartContext);
+    const { price, toggleCart, addItem, bSignal } = useContext(CartContext);
 
     useEffect(() => {
         fetchData('Group', setGroupList)
@@ -38,6 +38,10 @@ export default function GroupScreen({navigation, route}) {
         if(idGroup==1) getButtonsWithPacks(setItems)
         else getGroupItemsBySaga(idGroup, setItems)
     }, [idGroup])
+
+    useEffect(() => {
+      getMostSoldWithPacks(idGroup, setMostSold)
+    }, [bSignal])
 
     const handleButtonPress = (buttonId) => {
         if (buttonId == -1 || expandedButtons.includes(buttonId)) {

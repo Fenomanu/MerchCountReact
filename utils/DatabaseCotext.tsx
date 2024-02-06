@@ -50,7 +50,8 @@ const createTables = () => {
             tx.executeSql(`
               CREATE TABLE IF NOT EXISTS Saga (
                 id INTEGER PRIMARY KEY,
-                name TEXT
+                name TEXT,
+                color TEXT
               );
             `);
           
@@ -665,7 +666,7 @@ export const DatabaseProvider = ({ children }) => {
     
     const createSaga = (items, callback: (data: any) => void) => {
       console.log("Creating Saga")
-      var query = `INSERT INTO [Saga] VALUES (NULL, ?)`
+      var query = `INSERT INTO [Saga] VALUES (NULL, ?, ?)`
       database.transaction((tx) => {
           // Lógica para insertar datos en la base de datos.
           tx.executeSql(query, items, (_, result) => {
@@ -677,6 +678,7 @@ export const DatabaseProvider = ({ children }) => {
               const newSaga = {
                   id: newSagaId,
                   name: items[0],
+                  color : items[1],
               };
               callback(newSaga)
           },
@@ -691,9 +693,10 @@ export const DatabaseProvider = ({ children }) => {
       console.log("Editing Saga");
       var query = `
           UPDATE [Saga]
-          SET name = ?
+          SET name = ?,
+              color = ?
           WHERE id = ?`;
-      const params = [updatedValues[0], sagaId];
+      const params = [updatedValues[0], updatedValues[1], sagaId];
       console.log(params)
       database.transaction((tx) => {
           console.log("About to execute")
@@ -707,7 +710,8 @@ export const DatabaseProvider = ({ children }) => {
               // directamente de 'updatedValues'.
               const editedSaga = {
                   id: sagaId,
-                  name: updatedValues[0]
+                  name: updatedValues[0],
+                  color : updatedValues[1]
               };
               callback(editedSaga);
           },
@@ -1236,7 +1240,7 @@ export const DatabaseProvider = ({ children }) => {
             console.log(result.rows)
             var sagas = {}
             result.rows._array.forEach(element => {
-              if (!sagas[element.id]) sagas[element.id] = element.name
+              if (!sagas[element.id]) sagas[element.id] = {name : element.name, color : element.color}
             });
             console.log(sagas)
             callback(sagas)

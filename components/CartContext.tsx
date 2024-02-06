@@ -5,8 +5,9 @@ const CartContext = createContext(null);
 const CartProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState({});
-  const [price, setPrice] = useState(0)
-  const { createOrder,printOrders } = useDatabase();
+  const [price, setPrice] = useState(0);
+  const [bSignal, setSignal] = useState(0)
+  const { createOrder,printOrders } = useDatabase()
 
   const toggleCart = () => {
     setIsOpen(!isOpen);
@@ -81,7 +82,7 @@ const CartProvider = ({ children }) => {
   };
 
   const buy = () => {
-    createOrder(price, Object.entries(items), () => {setItems({}); setPrice(0)});
+    createOrder(price, Object.entries(items), () => {setItems({}); setPrice(0); setSignal(0);});
   }
 
   const printAll = () => {
@@ -89,7 +90,7 @@ const CartProvider = ({ children }) => {
   }
 
   return (
-    <CartContext.Provider value={{ isOpen, printAll, toggleCart, items, price, addItem, addOne, removeOne, deleteItem, buy, clearCart, changePrice }}>
+    <CartContext.Provider value={{ isOpen, printAll, toggleCart, items, price, addItem, addOne, removeOne, deleteItem, buy, clearCart, changePrice, bSignal }}>
       {children}
     </CartContext.Provider>
   );

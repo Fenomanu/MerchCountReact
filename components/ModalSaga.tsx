@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
+function esFormatoHexadecimal(str) {
+  // Utiliza una expresión regular para comprobar el formato
+  const regex = /^#[0-9A-Fa-f]{6}$/;
+  return regex.test(str);
+}
 
 export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreate }) {
     const [formValues, setFormValues] = useState(saga);
@@ -45,7 +50,9 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
     };
 
     const checkValues = () => {
-      if(formValues.name != "") return true
+      if(formValues.name != "" 
+        && formValues.color != ""
+        && esFormatoHexadecimal(formValues.color)) return true
       return false
     }
     const handleSubmit = () => {
@@ -74,6 +81,12 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
                         onChangeText={(text) => handleInputChange('name', text)}
                         placeholder="Sagas name"
                         value={formValues.name}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => handleInputChange('color', text)}
+                        placeholder="Sagas color"
+                        value={formValues.color}
                     />
                     <View style={styles.hContainer}>
                       <TouchableOpacity
