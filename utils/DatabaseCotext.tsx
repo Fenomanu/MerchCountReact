@@ -1087,7 +1087,7 @@ export const DatabaseProvider = ({ children }) => {
               // Lógica para insertar datos en la base de datos.
               tx.executeSql(query, [], (_, result) => {
                   // Manejar el resultado de la inserción si es necesario.
-                  console.log(result)
+                  console.log(result.rows._array)
                   callback(result.rows._array)
               },
               (_,result) => {
@@ -1121,7 +1121,7 @@ export const DatabaseProvider = ({ children }) => {
     const createOrder = (price, items, callback) => {
         // items es [[id, [amm,{info}]],...]
         console.log("Creating Order")
-        var query = `INSERT INTO [Order] VALUES (NULL, ?, CURRENT_TIMESTAMP)`
+        var query = `INSERT INTO [Order] VALUES (NULL, ?, datetime('now', 'localtime'))`
         database.transaction((tx) => {
             // Lógica para insertar datos en la base de datos.
             tx.executeSql(query, [price], (_, result) => {

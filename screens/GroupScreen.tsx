@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Text, View, Button, StatusBar, ScrollView, StyleSheet, Dimensions, FlatList, TextInput } from 'react-native';
+import { Text, View, Button, StatusBar, ScrollView, StyleSheet } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext';
 import SmallButton from '../components/SmallButton';
 import ProductButton from '../components/ProductButton';
@@ -69,32 +69,28 @@ export default function GroupScreen({navigation, route}) {
     if (idGroup === 1) {
         content = (
             Object.keys(items).map((sagaId) => (
-                <View style={styles.hContainer} key={sagaId}>
-                    <View style={styles.hContainer}>
+                  <>
                     {items[sagaId].map((product, index) => (
                         <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
                     ))}
-                    </View>
-                </View>
+                  </>
             ))
         );
     } else if (idGroup === 2) {
         content = (
             Object.keys(items).map((sagaId) => (
-                <View style={styles.hContainer} key={sagaId}>
-                    <View style={styles.hContainer}>
+                  <>
                     {items[sagaId].map((product, index) => (
                         <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
                     ))}
-                    </View>
-                </View>
+                  </>
             ))
         );
     } else {
         content = Object.keys(items).map((sagaId) => (
             <>
-              <SagaButton onPress={() => handleButtonPress(sagaId)} saga={sagas[sagaId]} />
-              {expandedButtons.includes(sagaId) && (
+              {sagaId.toString() != '0' ? <SagaButton onPress={() => handleButtonPress(sagaId)} saga={sagas[sagaId]} /> : null }
+              {(sagaId.toString() == '0' || expandedButtons.includes(sagaId)) && (
                 <>
                   {items[sagaId].map((product) => (
                     <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)} />
@@ -104,21 +100,6 @@ export default function GroupScreen({navigation, route}) {
             </>
           ));
     }
-    /*
-    content = (
-        Object.keys(items).map((sagaId) => (
-            <>
-            <SagaButton onPress={() => handleButtonPress(sagaId)} saga={sagas[sagaId]}/>
-            {expandedButtons.includes(sagaId) && (
-                <>
-                {items[sagaId].map((product, index) => (
-                    <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
-                ))}
-                </>
-            )}
-            </>
-        ))
-    );*/
 
     return (
         <View style={[styles.container, containerExtra]}>

@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
     },
     wrapper: {
       flexDirection: 'row',
-      flex:1,
       flexWrap: 'wrap',
       justifyContent: 'center',
       backgroundColor: '#FFC0CB',
