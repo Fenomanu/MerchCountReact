@@ -1,27 +1,26 @@
-import { useState } from 'react';
-import { Text, View, Modal, StyleSheet, Pressable, Alert, Button } from 'react-native';
+import { Text, View, StyleSheet, Image } from 'react-native';
 import ImgTinyB from './ImgTinyB';
 
 
-export default function TableItem({ item, onEdit, onDelete, onShowToggle}) {
-    
+export default function ProductItem({ item, saga, group, onEdit, onShowToggle, onClone, onDelete }) {
+    console.log(group)
     return (
         <View style={styles.container}>
-            <Text>
-                
-            </Text>
+            <Image width={45} height={45} source={{uri: group.logoPath}}/>
             <Text>
                 {item.name}
+                {"\n" + saga.name}
+            </Text>
+            <Text>
+                {item.price} €
             </Text>
             <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
-                {onShowToggle ? 
-                    <>
-                        <ImgTinyB name={item.isSoldOut ? 'eye-off-outline' : 'eye-outline'} backgroundColor={'#FED8B1'} onPress={() => onShowToggle()}></ImgTinyB>
-                        <Text>       </Text>
-                    </>
-                :null}
+                <ImgTinyB name={item.isSoldOut ? 'eye-off-outline' : 'eye-outline'} backgroundColor={'#FED8B1'} onPress={() => onShowToggle()}></ImgTinyB>
+                <Text>   </Text>
                 <ImgTinyB name={'pencil'} backgroundColor={'#75F4F4'} onPress={() => onEdit()}></ImgTinyB>
-                <Text>       </Text>
+                <Text>   </Text>
+                <ImgTinyB name={'content-copy'} backgroundColor={'#75F4F4'} onPress={() => onClone()}></ImgTinyB>
+                <Text>   </Text>
                 <ImgTinyB name={'trash-can'} backgroundColor={'#FFC0CB'} onPress={() => onDelete()}></ImgTinyB>
             </View>
         </View>

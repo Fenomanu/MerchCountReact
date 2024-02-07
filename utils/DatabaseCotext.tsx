@@ -62,6 +62,7 @@ const createTables = () => {
                 name TEXT,
                 imagePath TEXT,
                 price REAL,
+                isSoldOut BOOLEAN,
                 idGroup INTEGER,
                 idSaga INTEGER,
                 FOREIGN KEY (idGroup) REFERENCES [Group] (id),
@@ -97,6 +98,17 @@ const createTables = () => {
                 ammount INTEGER,
                 idProd INTEGER,
                 FOREIGN KEY (idOrder) REFERENCES [Order] (id),
+                FOREIGN KEY (idProd) REFERENCES Product (id)
+              );
+            `);
+            
+            // Crea la tabla Pack
+            tx.executeSql(`
+              CREATE TABLE IF NOT EXISTS SoldOut (
+                id INTEGER PRIMARY KEY,
+                idProd INTEGER,
+                isSoldOut BOOLEAN,
+                soldOutTime DATETIME,
                 FOREIGN KEY (idProd) REFERENCES Product (id)
               );
             `);
@@ -213,6 +225,27 @@ export const DatabaseProvider = ({ children }) => {
             tx.executeSql(query, [], (_, result) => {
                 // Manejar el resultado de la inserción si es necesario.
                 callback(result.rows._array)
+            },
+            (_,result) => {
+                console.log(result)
+                return false;
+            });
+        });
+    };
+
+    const readPublicGroupsAndDict = (callback: (data: any[]) => void, dictSet: (data: {}) => void) => {
+      //groups = {id:{name, logoPath}} (dict)
+        var query = `Select * FROM [Group] WHERE adminOnly = 0`
+        database.transaction((tx) => {
+            // Lógica para insertar datos en la base de datos.
+            tx.executeSql(query, [], (_, result) => {
+                // Manejar el resultado de la inserción si es necesario.
+                callback(result.rows._array)
+                var groups = {}
+                result.rows._array.forEach(element => {
+                  if (!groups[element.id]) groups[element.id] = {name : element.name, logoPath : element.logoPath}
+                });
+                dictSet(groups)
             },
             (_,result) => {
                 console.log(result)
@@ -366,7 +399,7 @@ export const DatabaseProvider = ({ children }) => {
     
     const createProduct = (items, callback: (data: any) => void) => {
       console.log("Creating product")
-      var query = `INSERT INTO [Product] VALUES (NULL, ?, ?, ?, ?, ?)`
+      var query = `INSERT INTO [Product] VALUES (NULL, ?, ?, ?, 0, ?, ?)`
       database.transaction((tx) => {
           // Lógica para insertar datos en la base de datos.
           tx.executeSql(query, items, (_, result) => {
@@ -380,6 +413,7 @@ export const DatabaseProvider = ({ children }) => {
                   name: items[0],
                   imagePath : items[1],
                   price : items[2],
+                  isSoldOut : 0,
                   idGroup : items[3],
                   idSaga : items[4],
               };
@@ -399,10 +433,11 @@ export const DatabaseProvider = ({ children }) => {
           SET name = ?,
               imagePath = ?,
               price = ?,
+              isSoldOut = ?,
               idGroup = ?,
               idSaga = ?
           WHERE id = ?`;
-      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], updatedValues[4], productId];
+      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], updatedValues[4], updatedValues[5], productId];
       console.log(params)
       database.transaction((tx) => {
           console.log("About to execute")
@@ -419,8 +454,9 @@ export const DatabaseProvider = ({ children }) => {
                   name: updatedValues[0],
                   imagePath : updatedValues[1],
                   price : updatedValues[2],
-                  idGroup : updatedValues[3],
-                  idSaga : updatedValues[4],
+                  isSoldOut : updatedValues[3],
+                  idGroup : updatedValues[4],
+                  idSaga : updatedValues[5],
               };
               callback(editedProduct);
           },
@@ -433,8 +469,8 @@ export const DatabaseProvider = ({ children }) => {
     };
 
     const cloneProduct = (value, callback: (data : any) => void) => {
-      const query = `INSERT INTO [Product] (name, imagePath, price, idGroup, idSaga)
-      SELECT name, imagePath, price, idGroup, idSaga
+      const query = `INSERT INTO [Product] (name, imagePath, price, isSoldOut, idGroup, idSaga)
+      SELECT name, imagePath, price, isSoldOut, idGroup, idSaga
       FROM [Product]
       WHERE id = ?;`
       db.transaction((tx) => {
@@ -450,6 +486,7 @@ export const DatabaseProvider = ({ children }) => {
                 name: value.name,
                 imagePath : value.imagePath,
                 price : value.price,
+                isSoldOut : value.isSoldOut,
                 idGroup : value.idGroup,
                 idSaga : value.idSaga,
             };
@@ -479,6 +516,7 @@ export const DatabaseProvider = ({ children }) => {
                     P.imagePath
             END AS imagePath,
             P.price,
+            P.isSoldOut,
             P.idGroup,
             P.idSaga
         FROM Product AS P WHERE P.idGroup = 1;`
@@ -548,11 +586,13 @@ export const DatabaseProvider = ({ children }) => {
                   P.imagePath
           END AS imagePath,
           P.price,
+          P.isSoldOut,
           P.idGroup,
           P.idSaga, 
           SUM(OrderDetail.ammount) AS totalAmount
         FROM OrderDetail
         INNER JOIN Product AS P ON OrderDetail.idProd = P.id
+        WHERE P.isSoldOut = 0
         GROUP BY OrderDetail.idProd
         ORDER BY totalAmount DESC
         LIMIT 10;` 
@@ -570,12 +610,13 @@ export const DatabaseProvider = ({ children }) => {
                     P.imagePath
             END AS imagePath,
             P.price,
+            P.isSoldOut,
             P.idGroup,
             P.idSaga, 
             SUM(OrderDetail.ammount) AS totalAmount
         FROM OrderDetail
         INNER JOIN Product AS P ON OrderDetail.idProd = P.id
-        WHERE P.idGroup = ${idGroup}
+        WHERE P.idGroup = ${idGroup} AND P.isSoldOut = 0
         GROUP BY OrderDetail.idProd
         ORDER BY totalAmount DESC
         LIMIT 10;` 
@@ -664,6 +705,27 @@ export const DatabaseProvider = ({ children }) => {
       });
     };
     
+    const readAllSagasAndDict = (callback: (data: any[]) => void, dictSet: (data: {}) => void) => {
+      var query = `Select * FROM [Saga]`
+      database.transaction((tx) => {
+          // Lógica para insertar datos en la base de datos.
+          tx.executeSql(query, [], (_, result) => {
+              // Manejar el resultado de la inserción si es necesario.
+              console.log(result)
+              callback(result.rows._array)
+              var sagas = {}
+              result.rows._array.forEach(element => {
+                if (!sagas[element.id]) sagas[element.id] = {name : element.name}
+                dictSet(sagas)
+              });
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+      });
+    };
+
     const createSaga = (items, callback: (data: any) => void) => {
       console.log("Creating Saga")
       var query = `INSERT INTO [Saga] VALUES (NULL, ?, ?)`
@@ -774,7 +836,7 @@ export const DatabaseProvider = ({ children }) => {
     
     const createPack = (items, callback: (data: any) => void) => {
       console.log("Creating Pack Product")
-      var query = `INSERT INTO [Product] VALUES (NULL, ?, ?, ?, 1, ?)`
+      var query = `INSERT INTO [Product] VALUES (NULL, ?, ?, ?, 0, 1, ?)`
       database.transaction((tx) => {
           // Lógica para insertar datos en la base de datos.
           tx.executeSql(query, items.slice(0,-1), (_, result) => {
@@ -788,6 +850,7 @@ export const DatabaseProvider = ({ children }) => {
                   name: items[0],
                   imagePath : items[1],
                   price : items[2],
+                  isSoldOut : 0,
                   idGroup : 1,
                   idSaga : items[3],
                   idProdElemList : []
@@ -839,16 +902,16 @@ export const DatabaseProvider = ({ children }) => {
     
     const updatePack = (packId, updatedValues, callback: (data: any) => void) => {
       console.log("Editing Pack");
-      console.log(updatedValues[3])
       var query = `
           UPDATE [Product]
           SET name = ?,
               imagePath = "",
               price = ?,
+              isSoldOut = ?,
               idGroup = 1,
               idSaga = ?
           WHERE id = ?`;
-      const params = [updatedValues[0], updatedValues[1], updatedValues[2], packId];
+      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], packId];
       console.log(params)
       database.transaction((tx) => {
           console.log("About to execute")
@@ -864,19 +927,20 @@ export const DatabaseProvider = ({ children }) => {
                 name: updatedValues[0],
                 imagePath : "",
                 price : updatedValues[1],
+                isSoldOut : updatedValues[2],
                 idGroup : 1,
                 idSaga : 0,
                 idProdElemList : []
             };
 
             tx.executeSql(`DELETE FROM [Pack] WHERE idProdBase=(?)`, [packId], (_,result) => {
-              if (updatedValues[3] && updatedValues[3].length > 0) {
+              if (updatedValues[4] && updatedValues[4].length > 0) {
                 console.log("Adding elements too")
                 query = `INSERT INTO [Pack] (idProdBase, idProdElem) VALUES (?, ?)`;
-                var params = [packId, updatedValues[3][0]];
+                var params = [packId, updatedValues[4][0]];
                 var b = false;
-                console.log(updatedValues[3])
-                updatedValues[3].forEach(element => {
+                console.log(updatedValues[4])
+                updatedValues[4].forEach(element => {
                   if (b) {
                     params.push(packId, element);
                     query += `, (?, ?)`; // Agrega placeholders adicionales a la sentencia SQL
@@ -894,7 +958,7 @@ export const DatabaseProvider = ({ children }) => {
                   const newPackId = result.insertId; // Obtén el ID del grupo recién creado
                   // Crea el nuevo grupo con los datos que desees
                   if (editedPack.idProdElemList) {
-                    editedPack.idProdElemList = editedPack.idProdElemList.concat(updatedValues[3]);
+                    editedPack.idProdElemList = editedPack.idProdElemList.concat(updatedValues[4]);
                     console.log(editedPack.idProdElemList)
                     callback(editedPack);
                   }
@@ -991,7 +1055,7 @@ export const DatabaseProvider = ({ children }) => {
     
     const createStock = (items, callback: (data: any) => void) => {
       console.log("Creating Pack Product")
-      var query = `INSERT INTO [Product] VALUES (NULL, ?, ?, ?, 2, ?)`
+      var query = `INSERT INTO [Product] VALUES (NULL, ?, ?, ?, 0, 2, ?)`
       database.transaction((tx) => {
           // Lógica para insertar datos en la base de datos.
           tx.executeSql(query, items, (_, result) => {
@@ -1005,6 +1069,7 @@ export const DatabaseProvider = ({ children }) => {
                   name: items[0],
                   imagePath : items[1],
                   price : items[2],
+                  isSoldOut : 0,
                   idGroup : 2,
                   idSaga : items[3],
               };
@@ -1024,10 +1089,11 @@ export const DatabaseProvider = ({ children }) => {
           SET name = ?,
               imagePath = ?,
               price = ?,
+              isSoldOut = ?,
               idGroup = 2,
               idSaga = ?
           WHERE id = ?`;
-      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], productId];
+      const params = [updatedValues[0], updatedValues[1], updatedValues[2], updatedValues[3], updatedValues[4], productId];
       console.log(params)
       database.transaction((tx) => {
           console.log("About to execute")
@@ -1044,8 +1110,9 @@ export const DatabaseProvider = ({ children }) => {
                   name: updatedValues[0],
                   imagePath : updatedValues[1],
                   price : updatedValues[2],
+                  isSoldOut : updatedValues[3],
                   idGroup : 2,
-                  idSaga : updatedValues[3],
+                  idSaga : updatedValues[4],
               };
               callback(editedProduct);
           },
@@ -1086,7 +1153,8 @@ export const DatabaseProvider = ({ children }) => {
                     GROUP_CONCAT(OrderDetail.ammount) AS ammounts
             FROM [Order]
             INNER JOIN OrderDetail ON [Order].id = OrderDetail.idOrder
-            GROUP BY [Order].id; `
+            GROUP BY [Order].id
+            ORDER BY [Order].orderTime DESC;`
           database.transaction((tx) => {
               // Lógica para insertar datos en la base de datos.
               tx.executeSql(query, [], (_, result) => {
@@ -1211,6 +1279,64 @@ export const DatabaseProvider = ({ children }) => {
         );
       });
     };
+
+    // SoldOut
+    const printSoldOut = () => {
+      console.log("Printing")
+      console.log("Printing")
+          var query = `SELECT [Product].name AS name, [SoldOut].isSoldOut, [SoldOut].soldOutTime as soldOutTime
+            FROM [SoldOut]
+            INNER JOIN [Product] ON [SoldOut].idProd = [Product].id
+            ORDER BY [SoldOut].soldOutTime DESC; `
+          database.transaction((tx) => {
+              // Lógica para insertar datos en la base de datos.
+              tx.executeSql(query, [], (_, result) => {
+                  // Manejar el resultado de la inserción si es necesario.
+                  console.log(result.rows._array)
+              },
+              (_,result) => {
+                  console.log(result)
+                  return false;
+              });
+          });
+    };
+    const registerSoldOutChange = (id, isSoldOut, callback : () => void) => {
+      console.log("Register SoldOut");
+      const query = `
+          UPDATE [Product]
+          SET isSoldOut = ?
+          WHERE id = ?`;
+      const query2 = `INSERT INTO [SoldOut] VALUES (NULL, ?, ?, datetime('now', 'localtime'))`;
+      const params = [isSoldOut, id];
+      database.transaction((tx) => {
+          tx.executeSql(query, params, (_, result) => {
+              console.log("Edited Product");
+              // Puedes manejar el resultado de la edición si es necesario.
+              console.log(result);
+              db.transaction((tx) => {
+                tx.executeSql(
+                  query2,
+                  [id, isSoldOut],
+                  (tx, result) => {
+                    console.log("Callback")
+                    console.log(result)
+                    callback();
+                  },
+                  (error) => {
+                    console.error("Error al ejecutar la consulta:", error);
+                    return false;
+                  }
+                );
+              });
+          },
+          (_, result) => {
+              console.log("Execute Error")
+              console.log(result);
+              return false;
+          });
+      }, (error) => {console.log(error)});
+    }
+
   
     const getGroupItemsBySaga = (idGroup, callback : (data:any) => void) => {
       database.transaction((tx) => {
@@ -1254,12 +1380,13 @@ export const DatabaseProvider = ({ children }) => {
     
   return (
     <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, deleteItem, getButtonsWithPacks,
-      readPublicGroups, createGroup, updateGroup, checkGroupDelete,
+      readPublicGroups, readPublicGroupsAndDict, createGroup, updateGroup, checkGroupDelete,
       readAllProducts, createProduct, updateProduct, cloneProduct, getMostSold, searchProduct, getProdNames, checkProductDelete, checkAdminDelete, getMostSoldWithPacks,
-      readAllSagas, createSaga, updateSaga, checkSagaDelete,
+      readAllSagas, readAllSagasAndDict, createSaga, updateSaga, checkSagaDelete,
       readAllPacks, createPack, updatePack, printPacks, deletePack,
       readAllStock, createStock, updateStock, printStock,
       readOrders, createOrder, deleteOrder, printOrders,
+      printSoldOut, registerSoldOutChange,
       getGroupItemsBySaga, getSagasDict }}>
       {children}
     </DatabaseContext.Provider>

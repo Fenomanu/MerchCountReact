@@ -16,12 +16,13 @@ export default function NewStock({navigation}) {
         name : "",
         imagePath : "",
         price : 0,
+        isSoldOut : 0,
         idGroup : 2,
         idSaga : 0
     }
 
     // Database context
-    const { deleteItem, readAllStock, createStock, updateStock, printStock, checkAdminDelete } = useDatabase();
+    const { deleteItem, readAllStock, createStock, updateStock, registerSoldOutChange, checkAdminDelete } = useDatabase();
 
     // Group List
     const [stocks, setStocks] = useState([]);
@@ -50,8 +51,26 @@ export default function NewStock({navigation}) {
         });
     }
 
+    const handleShowItem = (stockToShow) => {
+      const isSoldOut = !stockToShow.isSoldOut
+      registerSoldOutChange(stockToShow.id, isSoldOut, () => {
+        const updatedStocks = stocks.map((stock) => {
+            if (stock.id === stockToShow.id) {
+              // Modifica el grupo con el ID coincidente
+              return {
+                ...stock,
+                isSoldOut: isSoldOut,
+              };
+            }
+            // Mantén los demás grupos sin cambios
+            return stock;
+          });
+        setStocks(updatedStocks)
+      });
+    }
+
     const handleEditItem = (stockToEdit) => {
-        updateStock(stockToEdit.id,[stockToEdit.name, stockToEdit.imagePath, stockToEdit.price, stockToEdit.idSaga], (editedStock) => {
+        updateStock(stockToEdit.id,[stockToEdit.name, stockToEdit.imagePath, stockToEdit.price, stockToEdit.isSoldOut, stockToEdit.idSaga], (editedStock) => {
             if (typeof editedStock === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
             } else {
@@ -104,7 +123,7 @@ export default function NewStock({navigation}) {
             <ModalStock isVisible={isModalVisible} stock={focusStock} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
 
             <View style={styles.hContainer}>
-                <ImgButton name={'backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
+                <ImgButton name={'keyboard-backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
                 <Text> Stock </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptyStock)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
@@ -114,7 +133,7 @@ export default function NewStock({navigation}) {
                 contentContainerStyle={styles.productContainer}
                 style={styles.productList}
                 data={stocks}
-                renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
+                renderItem={ ({item}) => <TableItem item={item} onShowToggle={() => handleShowItem(item)} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
                 keyExtractor={item => item.id}
             />
             <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewGroup')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>

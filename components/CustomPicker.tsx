@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView, TouchableHighlight } from 'react-native';
 
 export default function CustomPicker({ options, selectedValue, onValueChange }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -24,15 +24,16 @@ export default function CustomPicker({ options, selectedValue, onValueChange }) 
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          <ScrollView style={styles.modalContent}>
+          <ScrollView style={styles.scroll} contentContainerStyle={styles.modalContent}>
             {(options).map((option) => (
-              <TouchableOpacity
+              <TouchableHighlight
                 key={option.id}
+                underlayColor={'lightgrey'}
                 style={styles.optionButton}
                 onPress={() => handleValueChange(option)}
               >
                 <Text>{option.name}</Text>
-              </TouchableOpacity>
+              </TouchableHighlight>
             ))}
           </ScrollView>
         </View>
@@ -52,6 +53,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     elevation:5,
   },
+  scroll: {
+    margin: 50
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -61,12 +65,12 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: 'white',
     padding: 20,
-    marginTop: 50,
-    marginBottom: 50,
     borderRadius: 10,
     elevation: 5,
   },
   optionButton: {
     padding: 10,
+    minWidth: 100,
+    borderRadius: 5
   },
 });

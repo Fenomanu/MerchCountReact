@@ -24,7 +24,7 @@ export default function CreationScreen({navigation, route}) {
       <View style={styles.hContainer}>
                 {/* Products */}
                     <View style={styles.block}>
-                        <ImgButton name={"backspace"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
+                        <ImgButton name={"keyboard-backspace"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
                         <Text style={styles.text}>     Creation screen</Text>
                     </View>
             </View>

@@ -20,6 +20,7 @@ Product {
     name : string
     imagePath : string
     price : float
+    isSoldOut : int
     idGroup : int
     idSaga : int
 }
@@ -41,6 +42,13 @@ OrderDetail {
     idOrder : int
     ammount : int
     idProd : int
+}
+
+SoldOut {
+    id : int
+    idProd : int
+    isSoldOut : int
+    soldOutTime : dateTime
 }
 
 Color palette:

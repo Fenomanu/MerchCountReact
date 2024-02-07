@@ -38,6 +38,7 @@ export default function NewSaga({navigation}) {
 
     // Adding item function
     const handleAddItem = (saga) => {
+      console.log(saga)
         createSaga([saga.name, saga.color], (newItem) => {
             if (typeof newItem === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
@@ -98,7 +99,7 @@ export default function NewSaga({navigation}) {
         <View style = {[styles.container,containerExtra]}>
             <ModalSaga isVisible={isModalVisible} saga={focusSaga} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
             <View style={styles.hContainer}>
-                <ImgButton name={'backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
+                <ImgButton name={'keyboard-backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
                 <Text> Sagas </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptySaga)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>

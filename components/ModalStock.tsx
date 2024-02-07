@@ -76,7 +76,7 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
                         onChangeText={(text) => handleInputChange('name', text)}
                         placeholder="Name"
                         value={formValues.name}
-                    />
+                        />
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('price', text)}
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   },
   hContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   buttonClose: {
     borderRadius: 20,

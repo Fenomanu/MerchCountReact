@@ -7,6 +7,7 @@ import { TriangleColorPicker } from 'react-native-color-picker';
 function esFormatoHexadecimal(str) {
   // Utiliza una expresión regular para comprobar el formato
   const regex = /^#[0-9A-Fa-f]{6}$/;
+  console.log("Checking")
   return regex.test(str);
 }
 
@@ -29,20 +30,6 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
         setCorrect(true)
         setFormValues(saga)
     }, [saga])
-    
-    // Image Picker logic
-    const openImagePicker = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 1,
-        });
-        
-        if (!result.canceled) {
-            // La imagen seleccionada está en result.uri
-            handleInputChange('imagePath', result.assets[0].uri)
-        }
-    };
 
     // Para el cambio de un valor en el formulario
     const handleInputChange = (fieldName, value) => {

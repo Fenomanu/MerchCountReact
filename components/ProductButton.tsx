@@ -2,11 +2,12 @@ import { StyleSheet, TouchableOpacity, Image, View } from 'react-native';
 import ComposeImage from './ComposeImage';
 
 
-export default function ProductButton({ idGroup, imagePath, onPress}) {
+export default function ProductButton({ idGroup, isSoldOut, imagePath, margin = 23, onPress}) {
     return (
       <View>
-        <TouchableOpacity style={styles.container} onPress={onPress}>
-         {imagePath == "" ?
+        <TouchableOpacity disabled={isSoldOut? true : false} style={[styles.container, {margin:margin, elevation: isSoldOut? 0:5}]} onPress={onPress}>
+          {isSoldOut ? <View style={styles.disabled}></View>: null}
+          {imagePath == "" ?
             <Image
               source={require('../images/images.png')} // Ruta relativa a la imagen en tu proyecto
               style={styles.image} // Personaliza el tamaño de la imagen
@@ -36,4 +37,14 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
+  disabled : {
+    width: 100, 
+    height: 100,
+    position: 'absolute',
+    left: 0,
+    zIndex: 20,
+    borderRadius: 5,
+    right: 0,
+    backgroundColor: 'rgba(192, 192, 192, 0.85)'
+  }
 });

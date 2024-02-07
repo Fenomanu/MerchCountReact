@@ -76,7 +76,7 @@ export default function GroupScreen({navigation, route}) {
             Object.keys(items).map((sagaId) => (
                   <>
                     {items[sagaId].map((product, index) => (
-                        <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
+                        <ProductButton isSoldOut={product.isSoldOut} key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
                     ))}
                   </>
             ))
@@ -86,7 +86,7 @@ export default function GroupScreen({navigation, route}) {
             Object.keys(items).map((sagaId) => (
                   <>
                     {items[sagaId].map((product, index) => (
-                        <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
+                        <ProductButton isSoldOut={product.isSoldOut} key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)}/>
                     ))}
                   </>
             ))
@@ -98,7 +98,7 @@ export default function GroupScreen({navigation, route}) {
               {(sagaId.toString() == '0' || expandedButtons.includes(sagaId)) && (
                 <>
                   {items[sagaId].map((product) => (
-                    <ProductButton key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)} />
+                    <ProductButton isSoldOut={product.isSoldOut} key={product.id} idGroup={product.idGroup} imagePath={product.imagePath} onPress={() => addItem(product)} />
                   ))}
                 </>
               )}
@@ -111,7 +111,7 @@ export default function GroupScreen({navigation, route}) {
             <View style={styles.hContainer}>
                 {/* Products */}
                     <View style={styles.block}>
-                        <ImgButton name={"backspace"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
+                        <ImgButton name={"keyboard-backspace"} backgroundColor={'white'} onPress={() => navigation.goBack()}/>
                         <Text style={{minWidth: 100}}>{(groups.find((group) => group.id === idGroup))?.name}</Text>
                     </View>
                     <View style={styles.block}>
@@ -126,7 +126,7 @@ export default function GroupScreen({navigation, route}) {
                 <ScrollView horizontal={false} style={styles.productList} contentContainerStyle={styles.productContainer}>
                     {mostSold.length > 0 ? (
                         mostSold.map((prod) => (
-                        <ProductButton key={prod.id} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)} />
+                        <ProductButton isSoldOut={prod.isSoldOut} key={prod.id} margin={10} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)} />
                         ))
                     ) : (
                         <Text style={styles.placeHolder}>To see the most sold products you should add and buy a product.</Text>
