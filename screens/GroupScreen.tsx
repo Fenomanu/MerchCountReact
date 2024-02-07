@@ -40,6 +40,7 @@ export default function GroupScreen({navigation, route}) {
     }, [idGroup])
 
     useEffect(() => {
+      console.log("Signal called")
       getMostSoldWithPacks(idGroup, setMostSold)
     }, [bSignal])
 

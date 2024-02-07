@@ -70,6 +70,10 @@ const CartProvider = ({ children }) => {
       setPrice(price - itemPrice < 0 ? 0 : price - itemPrice);
     }
   };
+  
+  useEffect(() => {
+    console.log("Signal called")
+  }, [bSignal])
 
   const clearCart = () => {
       // Asegúrate de actualizar el estado después de realizar los cambios
@@ -82,7 +86,7 @@ const CartProvider = ({ children }) => {
   };
 
   const buy = () => {
-    createOrder(price, Object.entries(items), () => {setItems({}); setPrice(0); setSignal(0);});
+    createOrder(price, Object.entries(items), () => {setItems({}); setPrice(0); setSignal(bSignal+1);});
   }
 
   const printAll = () => {

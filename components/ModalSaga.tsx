@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import ColorModal from './ColorModal';
+import { TriangleColorPicker } from 'react-native-color-picker';
 
 function esFormatoHexadecimal(str) {
   // Utiliza una expresión regular para comprobar el formato
@@ -11,6 +13,7 @@ function esFormatoHexadecimal(str) {
 export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreate }) {
     const [formValues, setFormValues] = useState(saga);
     const [correct, setCorrect] = useState(true)
+    const [colorVisible, setColorVisible] = useState(false)
 
     // Solicitud de permiso para acceder a la galeria
     useEffect(() => {
@@ -74,6 +77,7 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
             onRequestClose={closeModal}>
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
+                    <ColorModal isVisible={colorVisible} defColor={formValues.color} setColor={(color) => {setColorVisible(false); handleInputChange('color', color);}} ></ColorModal>
                     <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Saga</Text>
                     {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
                     <TextInput
@@ -82,12 +86,18 @@ export default function ModalSaga({ isVisible, saga, closeModal, onEdit, onCreat
                         placeholder="Sagas name"
                         value={formValues.name}
                     />
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => setColorVisible(true)}>
+                        <Text style={styles.textStyle}> Color </Text>
+                    </TouchableOpacity>
+                    {/*<TriangleColorPicker></TriangleColorPicker>
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('color', text)}
                         placeholder="Sagas color"
                         value={formValues.color}
-                    />
+    />*/}
                     <View style={styles.hContainer}>
                       <TouchableOpacity
                           style={styles.buttonClose}
