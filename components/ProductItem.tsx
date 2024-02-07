@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, Image } from 'react-native';
 import ImgTinyB from './ImgTinyB';
 
 
-export default function ProductItem({ item, saga, group, onEdit, onClone = undefined, onDelete }) {
+export default function ProductItem({ item, saga, group, onEdit, onClone, onDelete }) {
     console.log(group)
     return (
         <View style={styles.container}>
@@ -17,12 +17,8 @@ export default function ProductItem({ item, saga, group, onEdit, onClone = undef
             <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
                 <ImgTinyB name={'pencil'} backgroundColor={'#75F4F4'} onPress={() => onEdit()}></ImgTinyB>
                 <Text>       </Text>
-                {onClone ? (
-                    <>
-                    <ImgTinyB name={'content-copy'} backgroundColor={'#75F4F4'} onPress={() => onClone()}></ImgTinyB>
-                    <Text>       </Text>
-                    </>
-                ) : null}
+                <ImgTinyB name={'content-copy'} backgroundColor={'#75F4F4'} onPress={() => onClone()}></ImgTinyB>
+                <Text>       </Text>
                 <ImgTinyB name={'trash-can'} backgroundColor={'#FFC0CB'} onPress={() => onDelete()}></ImgTinyB>
             </View>
         </View>

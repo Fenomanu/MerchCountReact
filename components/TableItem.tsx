@@ -3,12 +3,12 @@ import { Text, View, Modal, StyleSheet, Pressable, Alert, Button } from 'react-n
 import ImgTinyB from './ImgTinyB';
 
 
-export default function TableItem({ item, onEdit, onClone = undefined, onDelete }) {
+export default function TableItem({ item, onEdit, onDelete }) {
     
     return (
         <View style={styles.container}>
             <Text>
-                {item.id}
+                
             </Text>
             <Text>
                 {item.name}
@@ -16,12 +16,6 @@ export default function TableItem({ item, onEdit, onClone = undefined, onDelete 
             <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
                 <ImgTinyB name={'pencil'} backgroundColor={'#75F4F4'} onPress={() => onEdit()}></ImgTinyB>
                 <Text>       </Text>
-                {onClone ? (
-                    <>
-                    <ImgTinyB name={'content-copy'} backgroundColor={'#75F4F4'} onPress={() => onClone()}></ImgTinyB>
-                    <Text>       </Text>
-                    </>
-                ) : null}
                 <ImgTinyB name={'trash-can'} backgroundColor={'#FFC0CB'} onPress={() => onDelete()}></ImgTinyB>
             </View>
         </View>
