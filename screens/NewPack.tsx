@@ -17,12 +17,13 @@ export default function NewPack({navigation}) {
         name : "",
         imagePath : "",
         price : 0,
+        isSoldOut: 0,
         idSaga : 0,
         idProdElemList : []
     }
 
     // Database context
-    const { deleteItem, readAllPacks, createPack, updatePack, printPacks, deletePack, checkAdminDelete } = useDatabase();
+    const { registerSoldOutChange, readAllPacks, createPack, updatePack, printPacks, deletePack, checkAdminDelete } = useDatabase();
 
     // Group List
     const [packs, setPacks] = useState([]);
@@ -51,9 +52,27 @@ export default function NewPack({navigation}) {
         });
     }
 
+    const handleShowItem = (packToShow) => {
+      const isSoldOut = !packToShow.isSoldOut
+      registerSoldOutChange(packToShow.id, isSoldOut, () => {
+        const updatedPacks = packs.map((pack) => {
+            if (pack.id === packToShow.id) {
+              // Modifica el grupo con el ID coincidente
+              return {
+                ...pack,
+                isSoldOut: isSoldOut,
+              };
+            }
+            // Mantén los demás grupos sin cambios
+            return pack;
+          });
+        setPacks(updatedPacks)
+      });
+    }
+
     const handleEditItem = (packToEdit) => {
         console.log(packToEdit)
-        updatePack(packToEdit.id, [packToEdit.name, packToEdit.price, 0, packToEdit.idProdElemList], (editedPack) => {
+        updatePack(packToEdit.id, [packToEdit.name, packToEdit.price, packToEdit.isSoldOut, 0, packToEdit.idProdElemList], (editedPack) => {
             if (typeof editedPack === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
             } else {
@@ -65,6 +84,7 @@ export default function NewPack({navigation}) {
                         name: editedPack.name,
                         imagePath: "",
                         price: editedPack.price,
+                        isSoldOut : editedPack.isSoldOut,
                         idGroup: 1,
                         idSaga: 0,
                         idProdElemList: editedPack.idProdElemList
@@ -118,7 +138,7 @@ export default function NewPack({navigation}) {
                 contentContainerStyle={styles.productContainer}
                 style={styles.productList}
                 data={packs}
-                renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
+                renderItem={ ({item}) => <TableItem item={item} onShowToggle={() => handleShowItem(item)} onEdit={ () => openModal(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
                 keyExtractor={item => item.id}
             />
             <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewStock')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>

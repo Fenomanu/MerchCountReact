@@ -17,12 +17,13 @@ export default function NewProduct({navigation}) {
         name : "",
         imagePath : "",
         price : 0,
+        isSoldOut : 0,
         idGroup : 0,
         idSaga : 0
     }
 
     // Database context
-    const { deleteItem, readAllProducts, createProduct, updateProduct, fetchData, readAllSagasAndDict, readPublicGroupsAndDict, cloneProduct, checkProductDelete } = useDatabase();
+    const { printSoldOut, deleteItem, readAllProducts, createProduct, updateProduct, registerSoldOutChange, readAllSagasAndDict, readPublicGroupsAndDict, cloneProduct, checkProductDelete } = useDatabase();
 
     // Group List
     const [products, setProducts] = useState([]);
@@ -34,7 +35,6 @@ export default function NewProduct({navigation}) {
     const [isModalVisible, setModalVisible] = useState(false);
     // Focused group for modal => emptyGroup if mode = create
     const [focusProduct, setFocusProduct] = useState(emptyProduct);
-    const [selectedLanguage, setSelectedLanguage] = useState();
     
     const openModal = (item) => {
         setFocusProduct(item);
@@ -56,8 +56,26 @@ export default function NewProduct({navigation}) {
         });
     }
 
+    const handleShowItem = (productToShow) => {
+      const isSoldOut = !productToShow.isSoldOut
+      registerSoldOutChange(productToShow.id, isSoldOut, () => {
+        const updatedProducts = products.map((product) => {
+            if (product.id === productToShow.id) {
+              // Modifica el grupo con el ID coincidente
+              return {
+                ...product,
+                isSoldOut: isSoldOut,
+              };
+            }
+            // Mantén los demás grupos sin cambios
+            return product;
+          });
+        setProducts(updatedProducts)
+      });
+    }
+
     const handleEditItem = (productToEdit) => {
-        updateProduct(productToEdit.id,[productToEdit.name, productToEdit.imagePath, productToEdit.price, productToEdit.idGroup, productToEdit.idSaga], (editedProduct) => {
+        updateProduct(productToEdit.id,[productToEdit.name, productToEdit.imagePath, productToEdit.price, productToEdit.isSoldOut, productToEdit.idGroup, productToEdit.idSaga], (editedProduct) => {
             if (typeof editedProduct === 'function') {
                 // Aquí puedes manejar el caso si newItem es una función en lugar de un grupo
             } else {
@@ -68,7 +86,8 @@ export default function NewProduct({navigation}) {
                         ...product,
                         name: editedProduct.name,
                         imagePath: editedProduct.imagePath,
-                        price: editedProduct.price,
+                        price: editedProduct.price, 
+                        isSoldOut : editedProduct.isSoldOut,
                         idGroup: editedProduct.idGroup,
                         idSaga: editedProduct.idSaga,
                       };
@@ -106,6 +125,7 @@ export default function NewProduct({navigation}) {
 
     useEffect(() => {
         // Load all groups in list
+        printSoldOut()
         readAllSagasAndDict(setSagas, setSagasDict)
         readPublicGroupsAndDict(setGroups, setGroupsDict)
         readAllProducts(setProducts)
@@ -134,7 +154,7 @@ export default function NewProduct({navigation}) {
                     contentContainerStyle={styles.productContainer}
                     style={styles.productList}
                     data={products}
-                    renderItem={ ({item}) => <ProductItem item={item} group={groupsDict[item.idGroup]} saga={sagasDict[item.idSaga]} onEdit={ () => openModal(item)} onClone={() => handleCloneItem(item)} onDelete={ () => handleDeleteItem(item.id)}></ProductItem> }
+                    renderItem={ ({item}) => <ProductItem item={item} group={groupsDict[item.idGroup]} saga={sagasDict[item.idSaga]} onEdit={ () => openModal(item)} onClone={() => handleCloneItem(item)} onShowToggle={ () => handleShowItem(item)} onDelete={ () => handleDeleteItem(item.id)}></ProductItem> }
                     keyExtractor={item => item.id}
                 />
                 <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewPack')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>

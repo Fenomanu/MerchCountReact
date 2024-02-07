@@ -16,7 +16,7 @@ export default function HomeScreen({navigation, route}) {
   const [botones, setBotones] = useState([]);
   const [mostSold, setMostSold] = useState([])
 
-  const {fetchData, getButtonsWithPacks, getMostSoldWithPacks } = useDatabase();
+  const {fetchData, getMostSoldWithPacks } = useDatabase();
   
   const { price, toggleCart, addItem, bSignal } = useContext(CartContext);
 
@@ -40,7 +40,7 @@ export default function HomeScreen({navigation, route}) {
               <ScrollView horizontal={true} style={styles.productList} contentContainerStyle={styles.productContainer}>
               {mostSold.length > 0 ? (
                 mostSold.map((prod) => (
-                  <ProductButton key={prod.id} margin={10} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)} />
+                  <ProductButton isSoldOut={prod.isSoldOut} key={prod.id} margin={10} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)} />
                 ))
               ) : (
                   <Text style={styles.placeHolder}>To see the most sold products you should add and buy a product.</Text>

@@ -71,15 +71,12 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
                 <View style={styles.modalView}>
                     <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Stock</Text>
                     {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
-                    <View style={styles.hContainer}>
-                      <Text>Name </Text>
-                      <TextInput
-                          style={styles.input}
-                          onChangeText={(text) => handleInputChange('name', text)}
-                          placeholder="Name"
-                          value={formValues.name}
-                          />
-                    </View>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => handleInputChange('name', text)}
+                        placeholder="Name"
+                        value={formValues.name}
+                        />
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('price', text)}

@@ -4,6 +4,8 @@ import * as ImagePicker from 'expo-image-picker';
 import PackProduct from './PackProduct';
 import SearchResult from './SearchResult';
 import { useDatabase } from '../utils/DatabaseCotext';
+import CustomSizeButton from './CustomSizeButton';
+import { ScrollView } from 'react-native-gesture-handler';
 var increment = 0
 
 
@@ -96,7 +98,16 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
             visible={isVisible}
             onRequestClose={closeModal}>
             <View style={styles.centeredView}>
+                <Text></Text>
+                <CustomSizeButton
+                    width={80}
+                    height={80}
+                    name={'close'}
+                    backgroundColor={'#FFC0CB'}
+                    onPress={closeModal}/>
                 <View style={styles.modalView}>
+                  <ScrollView>
+
                     <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Pack</Text>
                     {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
                     <TextInput
@@ -104,7 +115,7 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
                         onChangeText={(text) => handleInputChange('name', text)}
                         placeholder="Name"
                         value={formValues.name}
-                    />
+                        />
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('price', text)}
@@ -112,42 +123,41 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
                         placeholder="Price"
                         keyboardType='numeric'
                         onBlur={() => {
-                            handleInputChange('price', parseFloat(formValues.price? formValues.price : 0))
+                          handleInputChange('price', parseFloat(formValues.price? formValues.price : 0))
                         }}
-                    />
-                    
-                    <FlatList
+                        />
+                    {}
+                    {/*<FlatList
                         contentContainerStyle={styles.productContainer}
                         style={styles.productList}
                         data={formValues.idProdElemList}
                         renderItem={ ({item}) => <PackProduct item={item} name={prodNames[item]?prodNames[item].name:""} group={prodNames[item]?prodNames[item].group:""} onDelete={ () => onDeleteElement(item)}/> }
                         keyExtractor={item => (increment++).toString()}
-                    />
-                    <FlatList
+                      />*/}
+                    <View>
+                      
+                    </View>
+                    {/*<FlatList
                         contentContainerStyle={styles.searchContainer}
                         style={styles.searchList}
                         data={products}
                         renderItem={ ({item}) => <SearchResult item={item} name={item.name} group={item.groupName} onAdd={ () => onAddElement(item.id, item.name, item.groupName)}/> }
                         keyExtractor={item => item.id }
-                    />
+                      />*/}
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => text.length > 0 ? searchProduct(text, setProducts) : setProducts([])}
                         placeholder="Search products"
-                    />
-                    <View style={styles.hContainer}>
-                      <Pressable
-                          style={styles.buttonClose}
-                          onPress={closeModal}>
-                          <Text style={styles.textStyle}>Close</Text>
-                      </Pressable>
-                      <Pressable
-                          style={styles.button}
-                          onPress={handleSubmit}>
-                          <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
-                      </Pressable>
-                    </View>
+                        />
+                  </ScrollView>
                 </View>
+                <CustomSizeButton
+                    width={80}
+                    height={80}
+                    name={'check-all'}
+                    backgroundColor={'#75F4F4'}
+                    onPress={handleSubmit}/>
+                <Text></Text>
             </View>
         </Modal>
     );
@@ -156,7 +166,8 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
@@ -175,14 +186,14 @@ const styles = StyleSheet.create({
   buttonClose: {
     borderRadius: 20,
     padding: 15,
-    margin: 10,
+    margin: 40,
     elevation: 5,
     backgroundColor: '#FFC0CB',
   },
   button: {
     borderRadius: 20,
     padding: 15,
-    margin: 10,
+    margin: 40,
     elevation: 5,
     backgroundColor: '#75F4F4',
   },

@@ -3,7 +3,7 @@ import { Text, View, Modal, StyleSheet, Pressable, Alert, Button } from 'react-n
 import ImgTinyB from './ImgTinyB';
 
 
-export default function TableItem({ item, onEdit, onDelete }) {
+export default function TableItem({ item, onEdit, onDelete, onShowToggle}) {
     
     return (
         <View style={styles.container}>
@@ -14,6 +14,12 @@ export default function TableItem({ item, onEdit, onDelete }) {
                 {item.name}
             </Text>
             <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
+                {onShowToggle ? 
+                    <>
+                        <ImgTinyB name={item.isSoldOut ? 'eye-off-outline' : 'eye-outline'} backgroundColor={'#FED8B1'} onPress={() => onShowToggle()}></ImgTinyB>
+                        <Text>       </Text>
+                    </>
+                :null}
                 <ImgTinyB name={'pencil'} backgroundColor={'#75F4F4'} onPress={() => onEdit()}></ImgTinyB>
                 <Text>       </Text>
                 <ImgTinyB name={'trash-can'} backgroundColor={'#FFC0CB'} onPress={() => onDelete()}></ImgTinyB>
