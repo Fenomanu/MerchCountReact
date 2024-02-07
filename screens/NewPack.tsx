@@ -108,7 +108,7 @@ export default function NewPack({navigation}) {
             <ModalPack isVisible={isModalVisible} pack={focusPack} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
             
             <View style={styles.hContainer}>
-                <ImgButton name={'backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
+                <ImgButton name={'keyboard-backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
                 <Text> Packs </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptyPack)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>

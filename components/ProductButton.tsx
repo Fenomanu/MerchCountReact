@@ -2,10 +2,10 @@ import { StyleSheet, TouchableOpacity, Image, View } from 'react-native';
 import ComposeImage from './ComposeImage';
 
 
-export default function ProductButton({ idGroup, imagePath, onPress}) {
+export default function ProductButton({ idGroup, imagePath, margin = 23, onPress}) {
     return (
       <View>
-        <TouchableOpacity style={styles.container} onPress={onPress}>
+        <TouchableOpacity style={[styles.container, {margin:margin}]} onPress={onPress}>
          {imagePath == "" ?
             <Image
               source={require('../images/images.png')} // Ruta relativa a la imagen en tu proyecto

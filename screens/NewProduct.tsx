@@ -5,6 +5,7 @@ import ModalProduct from '../components/ModalProduct';
 import TableItem from '../components/TableItem';
 import ImgButton from '../components/ImgButton';
 import CustomSizeButton from '../components/CustomSizeButton';
+import ProductItem from '../components/ProductItem';
 
 
 export default function NewProduct({navigation}) {
@@ -21,12 +22,14 @@ export default function NewProduct({navigation}) {
     }
 
     // Database context
-    const { deleteItem, readAllProducts, createProduct, updateProduct, fetchData, readPublicGroups, cloneProduct, checkProductDelete } = useDatabase();
+    const { deleteItem, readAllProducts, createProduct, updateProduct, fetchData, readAllSagasAndDict, readPublicGroupsAndDict, cloneProduct, checkProductDelete } = useDatabase();
 
     // Group List
     const [products, setProducts] = useState([]);
     const [sagas, setSagas] = useState([]);
     const [groups, setGroups] = useState([]);
+    const [sagasDict, setSagasDict] = useState({});
+    const [groupsDict, setGroupsDict] = useState({});
     // Change modal visibility
     const [isModalVisible, setModalVisible] = useState(false);
     // Focused group for modal => emptyGroup if mode = create
@@ -103,8 +106,8 @@ export default function NewProduct({navigation}) {
 
     useEffect(() => {
         // Load all groups in list
-        fetchData('Saga', setSagas)
-        readPublicGroups(setGroups)
+        readAllSagasAndDict(setSagas, setSagasDict)
+        readPublicGroupsAndDict(setGroups, setGroupsDict)
         readAllProducts(setProducts)
     }, []);
 
@@ -121,7 +124,7 @@ export default function NewProduct({navigation}) {
             <ModalProduct isVisible={isModalVisible} product={focusProduct} sagasInput={sagas} groupsInput={groups} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
             
             <View style={styles.hContainer}>
-                <ImgButton name={'backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
+                <ImgButton name={'keyboard-backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
                 <Text> Products </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptyProduct)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>
@@ -131,7 +134,7 @@ export default function NewProduct({navigation}) {
                     contentContainerStyle={styles.productContainer}
                     style={styles.productList}
                     data={products}
-                    renderItem={ ({item}) => <TableItem item={item} onEdit={ () => openModal(item)} onClone={() => handleCloneItem(item)} onDelete={ () => handleDeleteItem(item.id)}></TableItem> }
+                    renderItem={ ({item}) => <ProductItem item={item} group={groupsDict[item.idGroup]} saga={sagasDict[item.idSaga]} onEdit={ () => openModal(item)} onClone={() => handleCloneItem(item)} onDelete={ () => handleDeleteItem(item.id)}></ProductItem> }
                     keyExtractor={item => item.id}
                 />
                 <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewPack')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>

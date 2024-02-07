@@ -104,7 +104,7 @@ export default function NewGroup({navigation}) {
         <View style = {[styles.container,containerExtra]}>
             <ModalGroup isVisible={isModalVisible} group={focusGroup} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
             <View style={styles.hContainer}>
-                <ImgButton name={'backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
+                <ImgButton name={'keyboard-backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
                 <Text> Groups </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptyGroup)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>

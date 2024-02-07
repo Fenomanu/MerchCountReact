@@ -51,7 +51,7 @@ export default function CartScreen() {
                   onDelete={() => {deleteItem(item[1].id)}}/>) : <Text>This is the Cart</Text>}
           </ScrollView>
           <View style={styles.footer}>
-            <CustomSizeButton width={150} height={70} name='backspace' onPress={toggleCart} backgroundColor={'#FFC0CB'}></CustomSizeButton>
+            <CustomSizeButton width={100} height={70} name='keyboard-backspace' onPress={toggleCart} backgroundColor={'#FFC0CB'}></CustomSizeButton>
             <CustomSizeButton width={250} height={70} name='cart-check' onPress={buy} backgroundColor={'#75F4F4'}></CustomSizeButton>
           </View>
         </Animated.View>

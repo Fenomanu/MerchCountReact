@@ -104,7 +104,7 @@ export default function NewStock({navigation}) {
             <ModalStock isVisible={isModalVisible} stock={focusStock} closeModal={closeModal} onCreate={handleAddItem} onEdit={handleEditItem}/>
 
             <View style={styles.hContainer}>
-                <ImgButton name={'backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
+                <ImgButton name={'keyboard-backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
                 <Text> Stock </Text>
                 <ImgButton name={'plus'} onPress={() => openModal(emptyStock)} backgroundColor={'#75F4F4'}></ImgButton>
             </View>

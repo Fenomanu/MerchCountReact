@@ -221,6 +221,27 @@ export const DatabaseProvider = ({ children }) => {
         });
     };
 
+    const readPublicGroupsAndDict = (callback: (data: any[]) => void, dictSet: (data: {}) => void) => {
+      //groups = {id:{name, logoPath}} (dict)
+        var query = `Select * FROM [Group] WHERE adminOnly = 0`
+        database.transaction((tx) => {
+            // Lógica para insertar datos en la base de datos.
+            tx.executeSql(query, [], (_, result) => {
+                // Manejar el resultado de la inserción si es necesario.
+                callback(result.rows._array)
+                var groups = {}
+                result.rows._array.forEach(element => {
+                  if (!groups[element.id]) groups[element.id] = {name : element.name, logoPath : element.logoPath}
+                });
+                dictSet(groups)
+            },
+            (_,result) => {
+                console.log(result)
+                return false;
+            });
+        });
+    };
+
     const createGroup = (items, callback: (data: any) => void) => {
         var query = `INSERT INTO [Group] VALUES (NULL, ?, ?, ?, ?, ?)`
         database.transaction((tx) => {
@@ -664,6 +685,27 @@ export const DatabaseProvider = ({ children }) => {
       });
     };
     
+    const readAllSagasAndDict = (callback: (data: any[]) => void, dictSet: (data: {}) => void) => {
+      var query = `Select * FROM [Saga]`
+      database.transaction((tx) => {
+          // Lógica para insertar datos en la base de datos.
+          tx.executeSql(query, [], (_, result) => {
+              // Manejar el resultado de la inserción si es necesario.
+              console.log(result)
+              callback(result.rows._array)
+              var sagas = {}
+              result.rows._array.forEach(element => {
+                if (!sagas[element.id]) sagas[element.id] = {name : element.name}
+                dictSet(sagas)
+              });
+          },
+          (_,result) => {
+              console.log(result)
+              return false;
+          });
+      });
+    };
+
     const createSaga = (items, callback: (data: any) => void) => {
       console.log("Creating Saga")
       var query = `INSERT INTO [Saga] VALUES (NULL, ?, ?)`
@@ -1086,7 +1128,8 @@ export const DatabaseProvider = ({ children }) => {
                     GROUP_CONCAT(OrderDetail.ammount) AS ammounts
             FROM [Order]
             INNER JOIN OrderDetail ON [Order].id = OrderDetail.idOrder
-            GROUP BY [Order].id; `
+            GROUP BY [Order].id
+            ORDER BY [Order].orderTime DESC;`
           database.transaction((tx) => {
               // Lógica para insertar datos en la base de datos.
               tx.executeSql(query, [], (_, result) => {
@@ -1254,9 +1297,9 @@ export const DatabaseProvider = ({ children }) => {
     
   return (
     <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, deleteItem, getButtonsWithPacks,
-      readPublicGroups, createGroup, updateGroup, checkGroupDelete,
+      readPublicGroups, readPublicGroupsAndDict, createGroup, updateGroup, checkGroupDelete,
       readAllProducts, createProduct, updateProduct, cloneProduct, getMostSold, searchProduct, getProdNames, checkProductDelete, checkAdminDelete, getMostSoldWithPacks,
-      readAllSagas, createSaga, updateSaga, checkSagaDelete,
+      readAllSagas, readAllSagasAndDict, createSaga, updateSaga, checkSagaDelete,
       readAllPacks, createPack, updatePack, printPacks, deletePack,
       readAllStock, createStock, updateStock, printStock,
       readOrders, createOrder, deleteOrder, printOrders,

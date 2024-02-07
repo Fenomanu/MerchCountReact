@@ -40,7 +40,7 @@ export default function HomeScreen({navigation, route}) {
               <ScrollView horizontal={true} style={styles.productList} contentContainerStyle={styles.productContainer}>
               {mostSold.length > 0 ? (
                 mostSold.map((prod) => (
-                  <ProductButton key={prod.id} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)} />
+                  <ProductButton key={prod.id} margin={10} idGroup={prod.idGroup} imagePath={prod.imagePath} onPress={() => addItem(prod)} />
                 ))
               ) : (
                   <Text style={styles.placeHolder}>To see the most sold products you should add and buy a product.</Text>
