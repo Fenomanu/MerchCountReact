@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image, TouchableOpacity } from 'react-native';
+import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import CustomSizeButton from './CustomSizeButton';
 
 
 export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCreate }) {
@@ -68,15 +69,26 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
             visible={isVisible}
             onRequestClose={closeModal}>
             <View style={styles.centeredView}>
+                <Text></Text>
+                <CustomSizeButton
+                    width={100}
+                    height={100}
+                    name={'close'}
+                    backgroundColor={'#FFC0CB'}
+                    onPress={closeModal}/>
+                <View>
                 <View style={styles.modalView}>
+                  <ScrollView>
                     <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Stock</Text>
                     {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
+                    <Text style={styles.textStyle}>Name *</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('name', text)}
                         placeholder="Name"
                         value={formValues.name}
                         />
+                    <Text style={styles.textStyle}>Price (€) *</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => handleInputChange('price', text)}
@@ -87,6 +99,7 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
                             handleInputChange('price', parseFloat(formValues.price))
                         }}
                     />
+                    <Text style={styles.textStyle}>Image *</Text>
                     <TouchableOpacity style={styles.imageInput} onPress={openImagePicker}>
                       <Image 
                           style={{width:80, height:80}}
@@ -96,55 +109,54 @@ export default function ModalStock({ isVisible, stock, closeModal, onEdit, onCre
                             : require('../images/images.png') // Ruta a tu imagen por defecto
                           }/>
                     </TouchableOpacity>
-                    <View style={styles.hContainer}>
-                      <Pressable
-                          style={styles.buttonClose}
-                          onPress={closeModal}>
-                          <Text style={styles.textStyle}>Close</Text>
-                      </Pressable>
-                      <Pressable
-                          style={styles.button}
-                          onPress={handleSubmit}>
-                          <Text style={styles.textStyle}>{formValues.id == -1 ? "Create" : "Edit"}</Text>
-                      </Pressable>
-                    </View>
-                </View>
+                    </ScrollView>
+                  </View>
+                  </View>
+                  <CustomSizeButton
+                      width={100}
+                      height={100}
+                      name={'check-all'}
+                      backgroundColor={'#75F4F4'}
+                      onPress={handleSubmit}/>
+                  <Text></Text>
             </View>
         </Modal>
     );
 }
 
+
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
     margin: 20,
+    minWidth: 250,
     backgroundColor: '#FED8B1',
     borderRadius: 20,
     paddingHorizontal: 25,
-    paddingVertical: 10,
+    paddingVertical: 20,
     justifyContent: 'space-between',
     elevation: 5,
   },
   hContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
   },
   buttonClose: {
     borderRadius: 20,
     padding: 15,
-    margin: 10,
+    margin: 40,
     elevation: 5,
     backgroundColor: '#FFC0CB',
   },
   button: {
     borderRadius: 20,
     padding: 15,
-    margin: 10,
+    margin: 40,
     elevation: 5,
     backgroundColor: '#75F4F4',
   },
@@ -157,8 +169,9 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: '#565554',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    marginLeft: 15,
+    marginTop:5,
+    textAlign: 'left',
   },
   modalText: {
     marginBottom: 15,
@@ -167,10 +180,24 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     margin: 12,
+    color: '#565554',
     borderRadius:10,
     backgroundColor: 'white',
     elevation:5,
     borderWidth: 0,
     padding: 10,
   },
+  productList: {
+    minHeight:30
+  },
+  productContainer: {
+    paddingHorizontal:10,
+  },
+  searchContainer: {
+    marginTop: 20,
+    borderRadius:20,
+    borderWidth:5,
+    marginHorizontal:10,
+    borderColor: '#f2c494'
+  }
 });

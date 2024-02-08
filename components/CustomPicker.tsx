@@ -14,8 +14,8 @@ export default function CustomPicker({ options, selectedValue, onValueChange }) 
         style={styles.pickerButton}
         onPress={() => setModalVisible(true)}
       >
-        <Text>{selectedValue.name}</Text>
-        <Text>▼</Text>
+        <Text style={styles.text}>{selectedValue.name}</Text>
+        <Text style={styles.text}>▼</Text>
       </TouchableOpacity>
       <Modal
         animationType='fade'
@@ -73,4 +73,7 @@ const styles = StyleSheet.create({
     minWidth: 100,
     borderRadius: 5
   },
+  text : {
+    color : '#565554'
+  }
 });

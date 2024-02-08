@@ -15,6 +15,7 @@ export default function HomeScreen({navigation, route}) {
   }
   const [botones, setBotones] = useState([]);
   const [mostSold, setMostSold] = useState([])
+  const [initialized, setInitialized] = useState(false);
 
   const {fetchData, getMostSoldWithPacks } = useDatabase();
   
@@ -29,8 +30,14 @@ export default function HomeScreen({navigation, route}) {
   );
 
   useEffect(() => {
-    getMostSoldWithPacks(-1, setMostSold)
-  }, [bSignal])
+    if (initialized) {
+      console.log("Signal called");
+      toggleCart()
+      getMostSoldWithPacks(-1, setMostSold);
+    } else {
+      setInitialized(true);
+    }
+  }, [bSignal]);
 
   return (
       // Outer container

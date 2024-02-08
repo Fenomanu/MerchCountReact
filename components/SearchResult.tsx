@@ -1,4 +1,5 @@
 import { Text, View, Modal, StyleSheet, Pressable, Alert, Button } from 'react-native';
+import SearchImgB from './SearchImgB';
 
 
 export default function SearchResult({ item, name, group, onAdd }) {
@@ -11,7 +12,7 @@ export default function SearchResult({ item, name, group, onAdd }) {
             <Text>
                 {group}
             </Text>
-            <Button color={'#FFC0CB'} title='+' onPress={onAdd}></Button>
+            <SearchImgB backgroundColor={'#90E0F3'} name='plus' onPress={onAdd}/>
         </View>
     );
 }
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       borderRadius:10,
       backgroundColor: 'white',
-      paddingHorizontal:10,
+      paddingLeft:10,
       elevation: 5,
       marginVertical: 5,
       alignItems:'center'

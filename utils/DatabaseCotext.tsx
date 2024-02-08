@@ -359,19 +359,18 @@ export const DatabaseProvider = ({ children }) => {
     
     const searchProduct = (name, callback: (data: any[]) => void) => {
       var query = `SELECT Product.id, Product.name, [Group].name AS groupName
-        FROM [Product] INNER JOIN [Group] ON Product.idGroup = [Group].id WHERE [Group].adminOnly = 0 AND Product.name LIKE ?;`
+        FROM [Product] INNER JOIN [Group] ON Product.idGroup = [Group].id WHERE [Group].adminOnly = 0 AND Product.name LIKE ? LIMIT 3;`
       database.transaction((tx) => {
           // Lógica para insertar datos en la base de datos.
           tx.executeSql(query, [`%${name}%`], (_, result) => {
               // Manejar el resultado de la consulta si es necesario.
-              console.log(result)
               callback(result.rows._array)
           },
           (_, result) => {
               console.log(result)
               return false;
           });
-      });
+      }, (error) => console.log(error));
     };
 
     const getProdNames = (list, callback: (data: {}) => void) => {

@@ -1,4 +1,6 @@
 import { Text, View, Modal, StyleSheet, Pressable, Alert, Button } from 'react-native';
+import CustomSizeButton from './CustomSizeButton';
+import SearchImgB from './SearchImgB';
 
 
 export default function PackProduct({ item, name, group, onDelete }) {
@@ -11,7 +13,7 @@ export default function PackProduct({ item, name, group, onDelete }) {
             <Text>
                 {group}
             </Text>
-            <Button color={'#FFC0CB'} title='x' onPress={onDelete}></Button>
+            <SearchImgB backgroundColor={'#FFC0CB'} name='close' onPress={onDelete}/>
         </View>
     );
 }
@@ -23,8 +25,9 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       borderRadius:10,
       backgroundColor: 'white',
-      paddingHorizontal:10,
+      paddingLeft:10,
       elevation: 5,
+      marginHorizontal : 10,
       marginVertical: 5,
       alignItems:'center'
     },

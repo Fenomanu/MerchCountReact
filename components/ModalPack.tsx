@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Text, View, Modal, StyleSheet, Pressable, Alert, TextInput, Button, Image, FlatList } from 'react-native';
+import { Text, View, Modal, StyleSheet, ScrollView, Alert, TextInput, Button, Image, FlatList } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import PackProduct from './PackProduct';
 import SearchResult from './SearchResult';
 import { useDatabase } from '../utils/DatabaseCotext';
 import CustomSizeButton from './CustomSizeButton';
-import { ScrollView } from 'react-native-gesture-handler';
 var increment = 0
 
 
@@ -100,60 +99,55 @@ export default function ModalPack({ isVisible, pack, closeModal, onEdit, onCreat
             <View style={styles.centeredView}>
                 <Text></Text>
                 <CustomSizeButton
-                    width={80}
-                    height={80}
+                    width={100}
+                    height={100}
                     name={'close'}
                     backgroundColor={'#FFC0CB'}
                     onPress={closeModal}/>
-                <View style={styles.modalView}>
-                  <ScrollView>
+                <View>
+                    <View style={styles.modalView}>
+                        <ScrollView>
 
-                    <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Pack</Text>
-                    {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('name', text)}
-                        placeholder="Name"
-                        value={formValues.name}
-                        />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => handleInputChange('price', text)}
-                        value={formValues.price.toString()}
-                        placeholder="Price"
-                        keyboardType='numeric'
-                        onBlur={() => {
-                          handleInputChange('price', parseFloat(formValues.price? formValues.price : 0))
-                        }}
-                        />
-                    {}
-                    {/*<FlatList
-                        contentContainerStyle={styles.productContainer}
-                        style={styles.productList}
-                        data={formValues.idProdElemList}
-                        renderItem={ ({item}) => <PackProduct item={item} name={prodNames[item]?prodNames[item].name:""} group={prodNames[item]?prodNames[item].group:""} onDelete={ () => onDeleteElement(item)}/> }
-                        keyExtractor={item => (increment++).toString()}
-                      />*/}
-                    <View>
-                      
+                          <Text style={styles.modalText}>{formValues.id == -1 ? "Create" : "Edit"} Pack</Text>
+                          {correct? null:<Text style={[styles.modalText,{color:'red'}]}>Fill fields</Text>}
+                          <Text style={styles.textStyle}>Name *</Text>
+                          <TextInput
+                              style={styles.input}
+                              onChangeText={(text) => handleInputChange('name', text)}
+                              placeholder="Name"
+                              value={formValues.name}
+                              />
+                          <Text style={styles.textStyle}>Price (€) *</Text>
+                          <TextInput
+                              style={styles.input}
+                              onChangeText={(text) => handleInputChange('price', text)}
+                              value={formValues.price.toString()}
+                              placeholder="Price"
+                              keyboardType='numeric'
+                              onBlur={() => {
+                                handleInputChange('price', parseFloat(formValues.price? formValues.price : 0))
+                              }}
+                              />
+                          
+                          <Text style={styles.textStyle}>Elements *</Text>
+                          {formValues.idProdElemList.map((item) => 
+                            <PackProduct item={item} name={prodNames[item]?prodNames[item].name:""} group={prodNames[item]?prodNames[item].group:""} onDelete={ () => onDeleteElement(item)}/>)}
+
+                          <View style={styles.searchContainer}>
+                            {products.map( (item) => {
+                              console.log("Item is " + item); return  <SearchResult item={item} name={item.name} group={item.groupName} onAdd={ () => onAddElement(item.id, item.name, item.groupName)}/> })}
+                              <TextInput
+                                  style={styles.input}
+                                  onChangeText={(text) => text.length > 0 ? searchProduct(text, setProducts) : setProducts([])}
+                                  placeholder="Search products"
+                                  />
+                          </View>
+                        </ScrollView>
                     </View>
-                    {/*<FlatList
-                        contentContainerStyle={styles.searchContainer}
-                        style={styles.searchList}
-                        data={products}
-                        renderItem={ ({item}) => <SearchResult item={item} name={item.name} group={item.groupName} onAdd={ () => onAddElement(item.id, item.name, item.groupName)}/> }
-                        keyExtractor={item => item.id }
-                      />*/}
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(text) => text.length > 0 ? searchProduct(text, setProducts) : setProducts([])}
-                        placeholder="Search products"
-                        />
-                  </ScrollView>
                 </View>
                 <CustomSizeButton
-                    width={80}
-                    height={80}
+                    width={100}
+                    height={100}
                     name={'check-all'}
                     backgroundColor={'#75F4F4'}
                     onPress={handleSubmit}/>
@@ -176,7 +170,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FED8B1',
     borderRadius: 20,
     paddingHorizontal: 25,
-    paddingVertical: 10,
+    paddingVertical: 20,
     justifyContent: 'space-between',
     elevation: 5,
   },
@@ -206,8 +200,9 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: '#565554',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    marginLeft: 15,
+    marginTop:5,
+    textAlign: 'left',
   },
   modalText: {
     marginBottom: 15,
@@ -216,6 +211,7 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     margin: 12,
+    color: '#565554',
     borderRadius:10,
     backgroundColor: 'white',
     elevation:5,
@@ -228,13 +224,11 @@ const styles = StyleSheet.create({
   productContainer: {
     paddingHorizontal:10,
   },
-  searchList: {
+  searchContainer: {
+    marginTop: 20,
     borderRadius:20,
     borderWidth:5,
     marginHorizontal:10,
     borderColor: '#f2c494'
-  },
-  searchContainer: {
-
   }
 });

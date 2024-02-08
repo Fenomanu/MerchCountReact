@@ -16,6 +16,7 @@ export default function GroupScreen({navigation, route}) {
     const [groups, setGroupList] = useState([])
     const [sagas, setSagas] = useState({})
     const [mostSold, setMostSold] = useState([])
+    const [initialized, setInitialized] = useState(false);
     // Accede a los parámetros pasados
     const [items, setItems] = useState([])
 
@@ -40,9 +41,14 @@ export default function GroupScreen({navigation, route}) {
     }, [idGroup])
 
     useEffect(() => {
-      console.log("Signal called")
-      getMostSoldWithPacks(idGroup, setMostSold)
-    }, [bSignal])
+      if (initialized) {
+        console.log("Signal called");
+        toggleCart()
+        getMostSoldWithPacks(idGroup, setMostSold);
+      } else {
+        setInitialized(true);
+      }
+    }, [bSignal]);
 
     const handleButtonPress = (buttonId) => {
         if (buttonId == -1 || expandedButtons.includes(buttonId)) {
