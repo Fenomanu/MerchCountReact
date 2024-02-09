@@ -1446,6 +1446,97 @@ export const DatabaseProvider = ({ children }) => {
         });
     });
     };
+
+    const restoreAllAppInfo = (data : {}) => {
+      console.log("Restoring")
+      db.transaction(tx => {
+        // Borrar todos los registros de la tabla Group
+        tx.executeSql(`DELETE FROM [Group];`, [], (_, { rowsAffected }) => {
+          console.log(`Grupos eliminados: ${rowsAffected}`);
+        });
+
+        // Borrar todos los registros de la tabla Saga
+        tx.executeSql(`DELETE FROM Saga;`, [], (_, { rowsAffected }) => {
+          console.log(`Sagas eliminadas: ${rowsAffected}`);
+        });
+
+        // Borrar todos los registros de la tabla Product
+        tx.executeSql(`DELETE FROM Product;`, [], (_, { rowsAffected }) => {
+          console.log(`Productos eliminados: ${rowsAffected}`);
+        });
+        
+        // Borrar todos los registros de la tabla Pack
+        tx.executeSql(`DELETE FROM Pack;`, [], (_, { rowsAffected }) => {
+          console.log(`Packs eliminadas: ${rowsAffected}`);
+        });
+    
+        // Borrar todos los registros de la tabla Order
+        tx.executeSql(`DELETE FROM [Order];`, [], (_, { rowsAffected }) => {
+          console.log(`Orders eliminados: ${rowsAffected}`);
+        });
+    
+        // Borrar todos los registros de la tabla OrderDetail
+        tx.executeSql(`DELETE FROM OrderDetail;`, [], (_, { rowsAffected }) => {
+          console.log(`OrderDetails eliminados: ${rowsAffected}`);
+        });
+    
+        // Borrar todos los registros de la tabla SoldOut
+        tx.executeSql(`DELETE FROM SoldOut;`, [], (_, { rowsAffected }) => {
+          console.log(`SoldOuts eliminadas: ${rowsAffected}`);
+        });
+
+        // Introducir toda la info en cada tabla
+        
+        // Introducir todos los registros de la tabla Group
+        data["Group"].forEach(({ adminOnly, id, logoPath, name, notes, price }) => {
+          tx.executeSql(
+            `INSERT INTO [Group] (adminOnly, id, logoPath, name, notes, price) VALUES (?, ?, ?, ?, ?, ?);`,
+            [adminOnly, id, logoPath, name, notes, price],
+            (_, { rows }) => console.log('Grupo insertado con éxito'),
+            (_, error) => {console.log('Error al insertar grupo', error); return false;}
+          );
+        });
+        /*
+        tx.executeSql(`DELETE FROM [Group];`, [], (_, { rowsAffected }) => {
+          console.log(`Grupos added: ${rowsAffected}`);
+        });
+
+        // Introducir todos los registros de la tabla Saga
+        tx.executeSql(`DELETE FROM Saga;`, [], (_, { rowsAffected }) => {
+          console.log(`Sagas added: ${rowsAffected}`);
+        });
+
+        // Introducir todos los registros de la tabla Product
+        tx.executeSql(`DELETE FROM Product;`, [], (_, { rowsAffected }) => {
+          console.log(`Productos added: ${rowsAffected}`);
+        });
+        
+        // Introducir todos los registros de la tabla Pack
+        tx.executeSql(`DELETE FROM Pack;`, [], (_, { rowsAffected }) => {
+          console.log(`Packs added: ${rowsAffected}`);
+        });
+    
+        // Introducir todos los registros de la tabla Order
+        tx.executeSql(`DELETE FROM [Order];`, [], (_, { rowsAffected }) => {
+          console.log(`Orders added: ${rowsAffected}`);
+        });
+    
+        // Introducir todos los registros de la tabla OrderDetail
+        tx.executeSql(`DELETE FROM OrderDetail;`, [], (_, { rowsAffected }) => {
+          console.log(`OrderDetails added: ${rowsAffected}`);
+        });
+    
+        // Introducir todos los registros de la tabla SoldOut
+        tx.executeSql(`DELETE FROM SoldOut;`, [], (_, { rowsAffected }) => {
+          console.log(`SoldOuts added: ${rowsAffected}`);
+        });*/
+
+      }, (error) => {
+        console.log('Error durante la transacción de borrado', error);
+      }, () => {
+        console.log('Todas las tablas han sido limpiadas exitosamente');
+      });
+    }
     
   return (
     <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, deleteItem, getButtonsWithPacks,
@@ -1456,7 +1547,7 @@ export const DatabaseProvider = ({ children }) => {
       readAllStock, createStock, updateStock, printStock,
       readOrders, createOrder, deleteOrder, printOrders,
       printSoldOut, registerSoldOutChange,
-      getGroupItemsBySaga, getSagasDict, getAllAppInfo }}>
+      getGroupItemsBySaga, getSagasDict, getAllAppInfo, restoreAllAppInfo }}>
       {children}
     </DatabaseContext.Provider>
   );

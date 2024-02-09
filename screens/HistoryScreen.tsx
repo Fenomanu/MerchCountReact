@@ -1,8 +1,10 @@
-import { View, StyleSheet, ScrollView, StatusBar, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, StatusBar, Alert, Text } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext'; 
 import HistoryItem from '../components/HistoryItem';
 import { useState } from 'react';
 import DataExport from '../utils/DataExport';
+import ImgButton from '../components/ImgButton';
+import BackupRestorer from '../utils/BackupRestorer';
 
 export default function HistoryScreen({navigation}) {
   const containerExtra = {
@@ -10,7 +12,7 @@ export default function HistoryScreen({navigation}) {
   }
   const [orders, setOrders] = useState([])
 
-  const { readOrders, deleteOrder, getAllAppInfo } = useDatabase();
+  const { readOrders, deleteOrder, getAllAppInfo, restoreAllAppInfo } = useDatabase();
 
   useState(()=> {
     readOrders(setOrders)
@@ -42,7 +44,13 @@ export default function HistoryScreen({navigation}) {
 
   return (
     <View style={[styles.container, containerExtra]}>
-      <DataExport onPress={getAllAppInfo} />
+      <View style={styles.hContainer}>
+        <ImgButton name={'keyboard-backspace'} onPress={() => navigation.goBack()} backgroundColor={'white'}></ImgButton>
+        <DataExport exportFunc={getAllAppInfo} />
+        <Text>Save Backup   </Text>
+        <BackupRestorer restoreFunc={restoreAllAppInfo}/>
+        <Text>Restore Backup   </Text>
+      </View>
       <ScrollView contentContainerStyle= {styles.vContainer}>
         {orders.map((item, index) => <HistoryItem key={index} item={item} onDelete={() => onDeleteElement(item.id)}></HistoryItem>)}
         </ScrollView>
@@ -71,7 +79,6 @@ const styles = StyleSheet.create({
   hContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'skyblue'
   },
   /* Contenedor de grupos */
   wrapper: {

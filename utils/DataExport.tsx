@@ -54,8 +54,8 @@ const DataExport = (exportFunc) => {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ImgButton name='progress-download' backgroundColor={'white'} onPress={() => exportFunc.onPress((res) => exportAndShareData(res))} />
+    <View>
+      <ImgButton name='progress-download' backgroundColor={'white'} onPress={() => exportFunc.exportFunc((res) => exportAndShareData(res))} />
     </View>
   );
 };
