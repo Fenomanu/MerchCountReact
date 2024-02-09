@@ -1376,6 +1376,76 @@ export const DatabaseProvider = ({ children }) => {
         });
     });
     };
+
+    const getAllAppInfo = (callback : (data:any) => void) => {
+      database.transaction((tx) => {
+        var allData = {}
+        // Lógica para insertar datos en la base de datos.
+        tx.executeSql(`SELECT * FROM [Group]`,[], (_, result) => {
+            // Manejar el resultado de la inserción si es necesario.
+            allData["Group"] = result.rows._array
+
+            tx.executeSql(`SELECT * FROM [Saga]`,[], (_, result) => {
+              // Manejar el resultado de la inserción si es necesario.
+              allData["Saga"] = result.rows._array
+
+              tx.executeSql(`SELECT * FROM [Product]`,[], (_, result) => {
+                // Manejar el resultado de la inserción si es necesario.
+                allData["Product"] = result.rows._array
+
+                tx.executeSql(`SELECT * FROM [Pack]`,[], (_, result) => {
+                  // Manejar el resultado de la inserción si es necesario.
+                  allData["Pack"] = result.rows._array
+
+                  tx.executeSql(`SELECT * FROM [Order]`,[], (_, result) => {
+                    // Manejar el resultado de la inserción si es necesario.
+                    allData["Order"] = result.rows._array
+
+                    tx.executeSql(`SELECT * FROM [OrderDetail]`,[], (_, result) => {
+                      // Manejar el resultado de la inserción si es necesario.
+                      allData["OrderDetail"] = result.rows._array
+
+                      tx.executeSql(`SELECT * FROM [SoldOut]`,[], (_, result) => {
+                        // Manejar el resultado de la inserción si es necesario.
+                        allData["SoldOut"] = result.rows._array
+                        callback(allData)
+                      },
+                      (_,result) => {
+                          console.log(result)
+                          return false;
+                      });
+                    },
+                    (_,result) => {
+                        console.log(result)
+                        return false;
+                    });
+                  },
+                  (_,result) => {
+                      console.log(result)
+                      return false;
+                  });
+                },
+                (_,result) => {
+                    console.log(result)
+                    return false;
+                });
+              },
+              (_,result) => {
+                  console.log(result)
+                  return false;
+              });
+            },
+            (_,result) => {
+                console.log(result)
+                return false;
+            });
+        },
+        (_,result) => {
+            console.log(result)
+            return false;
+        });
+    });
+    };
     
   return (
     <DatabaseContext.Provider value={{ database, fetchData, getAllTables, printTableColumns, deleteItem, getButtonsWithPacks,
@@ -1386,7 +1456,7 @@ export const DatabaseProvider = ({ children }) => {
       readAllStock, createStock, updateStock, printStock,
       readOrders, createOrder, deleteOrder, printOrders,
       printSoldOut, registerSoldOutChange,
-      getGroupItemsBySaga, getSagasDict }}>
+      getGroupItemsBySaga, getSagasDict, getAllAppInfo }}>
       {children}
     </DatabaseContext.Provider>
   );

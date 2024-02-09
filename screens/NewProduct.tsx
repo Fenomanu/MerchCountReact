@@ -154,7 +154,7 @@ export default function NewProduct({navigation}) {
                     contentContainerStyle={styles.productContainer}
                     style={styles.productList}
                     data={products}
-                    renderItem={ ({item}) => <ProductItem item={item} group={groupsDict[item.idGroup]} saga={sagasDict[item.idSaga]} onEdit={ () => openModal(item)} onClone={() => handleCloneItem(item)} onShowToggle={ () => handleShowItem(item)} onDelete={ () => handleDeleteItem(item.id)}></ProductItem> }
+                    renderItem={ ({item}) => <ProductItem item={item} group={groupsDict[item.idGroup]} saga={item.idSaga > 0 ? sagasDict[item.idSaga] : {id:0, name:"No Saga"}} onEdit={ () => openModal(item)} onClone={() => handleCloneItem(item)} onShowToggle={ () => handleShowItem(item)} onDelete={ () => handleDeleteItem(item.id)}></ProductItem> }
                     keyExtractor={item => item.id}
                 />
                 <CustomSizeButton name={'chevron-right'} onPress={() => navigation.replace('NewPack')} backgroundColor={'white'} width={80} height={'80%'} ></CustomSizeButton>

@@ -2,6 +2,7 @@ import { View, StyleSheet, ScrollView, StatusBar, Alert } from 'react-native';
 import { useDatabase } from '../utils/DatabaseCotext'; 
 import HistoryItem from '../components/HistoryItem';
 import { useState } from 'react';
+import DataExport from '../utils/DataExport';
 
 export default function HistoryScreen({navigation}) {
   const containerExtra = {
@@ -9,7 +10,7 @@ export default function HistoryScreen({navigation}) {
   }
   const [orders, setOrders] = useState([])
 
-  const { readOrders, deleteOrder } = useDatabase();
+  const { readOrders, deleteOrder, getAllAppInfo } = useDatabase();
 
   useState(()=> {
     readOrders(setOrders)
@@ -41,6 +42,7 @@ export default function HistoryScreen({navigation}) {
 
   return (
     <View style={[styles.container, containerExtra]}>
+      <DataExport onPress={getAllAppInfo} />
       <ScrollView contentContainerStyle= {styles.vContainer}>
         {orders.map((item, index) => <HistoryItem key={index} item={item} onDelete={() => onDeleteElement(item.id)}></HistoryItem>)}
         </ScrollView>
