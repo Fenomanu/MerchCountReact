@@ -1487,7 +1487,7 @@ export const DatabaseProvider = ({ children }) => {
 
         // Introducir toda la info en cada tabla
         
-        // Introducir todos los registros de la tabla Group
+        // Insertar en la tabla Group
         data["Group"].forEach(({ adminOnly, id, logoPath, name, notes, price }) => {
           tx.executeSql(
             `INSERT INTO [Group] (adminOnly, id, logoPath, name, notes, price) VALUES (?, ?, ?, ?, ?, ?);`,
@@ -1496,6 +1496,66 @@ export const DatabaseProvider = ({ children }) => {
             (_, error) => {console.log('Error al insertar grupo', error); return false;}
           );
         });
+        // Insertar en la tabla Saga
+        db.transaction(tx => {
+          data["Saga"].forEach(({ id, name, color }) => {
+            tx.executeSql(
+              `INSERT INTO Saga (id, name, color) VALUES (?, ?, ?);`,
+              [id, name, color]
+            );
+          });
+        });
+
+        // Insertar en la tabla Product
+        db.transaction(tx => {
+          data["Product"].forEach(({ id, name, imagePath, price, isSoldOut, idGroup, idSaga }) => {
+            tx.executeSql(
+              `INSERT INTO Product (id, name, imagePath, price, isSoldOut, idGroup, idSaga) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+              [id, name, imagePath, price, isSoldOut, idGroup, idSaga]
+            );
+          });
+        });
+
+        // Insertar en la tabla Pack
+        db.transaction(tx => {
+          data["Pack"].forEach(({ id, idProdBase, idProdElem }) => {
+            tx.executeSql(
+              `INSERT INTO Pack (id, idProdBase, idProdElem) VALUES (?, ?, ?);`,
+              [id, idProdBase, idProdElem]
+            );
+          });
+        });
+
+        // Insertar en la tabla Order
+        db.transaction(tx => {
+          data["Order"].forEach(({ id, price, orderTime }) => {
+            tx.executeSql(
+              `INSERT INTO [Order] (id, price, orderTime) VALUES (?, ?, ?);`,
+              [id, price, orderTime]
+            );
+          });
+        });
+
+        // Insertar en la tabla OrderDetail
+        db.transaction(tx => {
+          data["OrderDetail"].forEach(({ id, idOrder, ammount, idProd }) => {
+            tx.executeSql(
+              `INSERT INTO OrderDetail (id, idOrder, ammount, idProd) VALUES (?, ?, ?, ?);`,
+              [id, idOrder, ammount, idProd]
+            );
+          });
+        });
+
+        // Insertar en la tabla SoldOut
+        db.transaction(tx => {
+          data["SoldOut"].forEach(({ id, idProd, isSoldOut, soldOutTime }) => {
+            tx.executeSql(
+              `INSERT INTO SoldOut (id, idProd, isSoldOut, soldOutTime) VALUES (?, ?, ?, ?);`,
+              [id, idProd, isSoldOut, soldOutTime]
+            );
+          });
+        });
+
         /*
         tx.executeSql(`DELETE FROM [Group];`, [], (_, { rowsAffected }) => {
           console.log(`Grupos added: ${rowsAffected}`);
